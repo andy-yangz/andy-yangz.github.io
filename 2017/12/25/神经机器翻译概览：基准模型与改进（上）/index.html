@@ -1,0 +1,578 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>神经机器翻译概览：基准模型与改进（上） | Andy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Andy Yang">
+    
+
+    
+    <meta name="description" content="最近一段时间在研究的一些东西。 介绍一下当前机器翻译领域很火的神经机器翻译(Neural Machine Translation ，简称NMT)领域的大致状况，最近的一些进展（内容主要来自Philipp Koehn的 Statistical Machine Translation 还未发布的草稿，想了解更详细内容，读原文)。 首先什么是机器翻译？ 显而易见就是用机器来翻译，这里机器说的是计算机了。">
+<meta name="keywords" content="NLP,机器翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经机器翻译概览：基准模型与改进（上）">
+<meta property="og:url" content="https://andy-yangz.github.io/2017/12/25/神经机器翻译概览：基准模型与改进（上）/index.html">
+<meta property="og:site_name" content="Andy">
+<meta property="og:description" content="最近一段时间在研究的一些东西。 介绍一下当前机器翻译领域很火的神经机器翻译(Neural Machine Translation ，简称NMT)领域的大致状况，最近的一些进展（内容主要来自Philipp Koehn的 Statistical Machine Translation 还未发布的草稿，想了解更详细内容，读原文)。 首先什么是机器翻译？ 显而易见就是用机器来翻译，这里机器说的是计算机了。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-c9b0ed638057d8c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-87db57aaaadf12a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-6ae261d23593e48e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-5026fd46e7fc5f4e.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-fdfbda836a5df1df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-7183e2e8fa4af1bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-d101ecb327c1be73.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-eb5e1b10ba9fe7c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-f435c0d7a37e7ff4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-84693fdf68e59339.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-09-13T00:17:27.638Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经机器翻译概览：基准模型与改进（上）">
+<meta name="twitter:description" content="最近一段时间在研究的一些东西。 介绍一下当前机器翻译领域很火的神经机器翻译(Neural Machine Translation ，简称NMT)领域的大致状况，最近的一些进展（内容主要来自Philipp Koehn的 Statistical Machine Translation 还未发布的草稿，想了解更详细内容，读原文)。 首先什么是机器翻译？ 显而易见就是用机器来翻译，这里机器说的是计算机了。">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4787675-c9b0ed638057d8c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Andy" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Andy" title="Andy"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Andy">Andy</a></h1>
+				<h2 class="blog-motto">Ciao ~</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:andy-yangz.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/12/25/神经机器翻译概览：基准模型与改进（上）/" title="神经机器翻译概览：基准模型与改进（上）" itemprop="url">神经机器翻译概览：基准模型与改进（上）</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2017-12-25T02:02:29.000Z" itemprop="datePublished"> Published 2017-12-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基准模型（seq2seq-attention）"><span class="toc-number">1.</span> <span class="toc-text">基准模型（seq2seq+attention）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基准模型改进"><span class="toc-number">1.1.</span> <span class="toc-text">基准模型改进</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#集成解码方法-Ensemble-Decoding"><span class="toc-number">1.1.1.</span> <span class="toc-text">集成解码方法(Ensemble Decoding)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#检查点（checkpoint）集成"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">检查点（checkpoint）集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#多次运行-Multi-run-集成"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">多次运行 (Multi-run) 集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#利用从右到左模型重排序解码"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">利用从右到左模型重排序解码</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#处理大词汇量"><span class="toc-number">1.1.2.</span> <span class="toc-text">处理大词汇量</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#字节对编码-Byte-Pair-Encoding-BPE-法"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">字节对编码 (Byte Pair Encoding, BPE) 法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用单语言数据"><span class="toc-number">1.2.</span> <span class="toc-text">使用单语言数据</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#回译"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">回译</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#加入语言模型"><span class="toc-number">1.2.1.</span> <span class="toc-text">加入语言模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#往返训练"><span class="toc-number">1.2.2.</span> <span class="toc-text">往返训练</span></a></li></ol></li></ol></li></ol>
+		
+		</div>
+		
+		<p>最近一段时间在研究的一些东西。</p>
+<p>介绍一下当前机器翻译领域很火的神经机器翻译(<strong>Neural Machine Translation</strong> ，简称<strong>NMT)</strong>领域的大致状况，最近的一些进展（内容主要来自<strong>Philipp Koehn</strong>的 <strong><em>Statistical Machine Translation</em></strong> 还未发布的草稿，想了解更详细内容，读<a href="https://arxiv.org/pdf/1709.07809.pdf" target="_blank" rel="noopener">原文</a>)。</p>
+<p>首先什么是机器翻译？</p>
+<p>显而易见就是<strong>用机器来翻译</strong>，这里机器说的是计算机了。终极目标是抢走翻译们的饭… 噢，不对，是消除人们的交流沟通障碍，促进世界人民大团结！</p>
+<p>那神经机器翻译又是什么鬼？</p>
+<p>首先机器翻译是个大目标，达到目标有很多种方法。比如说神经机器翻译之前，很流行用统计方法来搭建机器翻译系统，这叫做<strong>统计机器翻译</strong> (Statistical Machine Translation SMT)。</p>
+<p>同样的如果用神经网络方法来达成机器翻译这个目标，那么就叫神经机器翻译。</p>
+<p>为什么现在神经机器翻译很火呢？ </p>
+<p>第一，在自然语言处理中，<strong>机器翻译是一个高级问题</strong>，这意味着解决这个问题，还能顺带把方法用到很多其他问题上去。比如说现在广泛使用的注意力机制 (Attention Mechanism)，最早就是先在机器翻译系统使用的。并且机器翻译<strong>非常实用</strong>，想想你看不懂论文时打开谷歌翻译时，就知道了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-c9b0ed638057d8c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>第二，还有现在深度学习大火，<strong>神经网络也确实在机器翻译上取得很好的成绩</strong>，比起之前统计机器翻译中效果最好的模型（基于短语的统计机器翻译模型）都能强出很多。这也是为什么现在谷歌翻译基本上都已经换成神经机器翻译模型了。</p>
+<p>好了，这就是背景知识了。那么先来讲讲现在使用最普遍的基准模型吧。</p>
+<h2 id="基准模型（seq2seq-attention）"><a href="#基准模型（seq2seq-attention）" class="headerlink" title="基准模型（seq2seq+attention）"></a>基准模型（seq2seq+attention）</h2><p><img src="http://upload-images.jianshu.io/upload_images/4787675-87db57aaaadf12a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>现在最常用的基准模型如上图，主体部分主要由三部分组成，编码器(Encoder)、解码器(Decoder)、还有注意力机制(Attention)。</p>
+<p><strong>编码器</strong>：编码器其实很好理解，就把它当做一个总结器，输入一段源语言句子(比如说英文的I love you.)，那么编码器就是把这句话的信息总结出来。可以理解为人读完一句话，然后总结成一个模糊的意思。</p>
+<p><strong>解码器</strong>：然后解码器根据编码器传过来的信息，来把这个信息用目标语言表示出来，也就是翻译出来。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-6ae261d23593e48e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><strong>注意力机制：</strong>如果单靠一次总结后直接解码翻译的话，效果并不好。所以可以再像人一样，边翻译同时再回看源语言每个词的信息，之后也能知道更准确的词和词的对应关系。上图就是英法翻译时，词对应情况。</p>
+<p>之后输入输出部分就主要由<strong>词向量表</strong>和<strong>预测模块</strong>组成了。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-5026fd46e7fc5f4e.gif?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>整个翻译流程像这样，输入源语言（比如说汉语），转换成词向量，传入编码器编码总结，然后传给解码器，解码器通过注意力机制，一个词一个词，边参考源语言信息边翻译成目标语言（比如说英语），最后用到柱搜索 (Beam Search，感兴趣自己去搜搜看) 算法选出最好的备选翻译。</p>
+<p>这就是目前神经机器学习的基准模型了。</p>
+<p>基准模型学习资源（流行框架）：</p>
+<ul>
+<li><a href="https://github.com/tensorflow/nmt" target="_blank" rel="noopener">TensorFlow NMT Tutorial</a></li>
+<li><a href="https://github.com/spro/practical-pytorch/blob/master/seq2seq-translation/seq2seq-translation.ipynb" target="_blank" rel="noopener">PyTorch NMT Tutorial</a></li>
+</ul>
+<h3 id="基准模型改进"><a href="#基准模型改进" class="headerlink" title="基准模型改进"></a>基准模型改进</h3><p>当然这个领域还在不停地发展，因此每年也会不断有很多提高基准模型的方法被发表出来，特别是在每年<a href="http://www.statmt.org/wmt17/" target="_blank" rel="noopener"><strong>WMT</strong></a>（相当于机器翻译领域每年的华山论贱）大赛上都会有队伍将最有效地一些方法进行总结，然后实现到实际模型上来。</p>
+<p>这些方法也都很有意思，之后就一一来介绍。</p>
+<h4 id="集成解码方法-Ensemble-Decoding"><a href="#集成解码方法-Ensemble-Decoding" class="headerlink" title="集成解码方法(Ensemble Decoding)"></a>集成解码方法(Ensemble Decoding)</h4><p>首先是比较容易理解的集成解码，实际上就是一句话<strong>人多力量大</strong>。</p>
+<p>既然一个模型的准确率不行，那么就几个不同的模型一起用，因为每个模型可能都会有些差异，有不同的缺点，如果用多个模型的话，就能产生互补效应，获得更好的翻译效果。</p>
+<p>但是集成也根据集成模型的不同分为以下几种。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-fdfbda836a5df1df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="检查点（checkpoint）集成"><a href="#检查点（checkpoint）集成" class="headerlink" title="检查点（checkpoint）集成"></a><strong>检查点（checkpoint）集成</strong></h5><p>检查点就相当于游戏中的存档点，将模型训练到一定程度，然后希望把当前模型的所有参数保持下来，以便之后使用。一般检查点会以epoch（整个数据集过一遍）、iteration（一次批训练更新权重）、或者句子数为单位，比如说epoch15模型就是训练完15个epoch的模型。</p>
+<p>而检查点集成就是，<strong>用这些不同时间点保存下来的模型一起来预测</strong>。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-7183e2e8fa4af1bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h5 id="多次运行-Multi-run-集成"><a href="#多次运行-Multi-run-集成" class="headerlink" title="多次运行 (Multi-run) 集成"></a><strong>多次运行 (Multi-run) 集成</strong></h5><p>多次运行集成有好几种情况。</p>
+<p>可以是<strong>同一个模型，以不同的初始条件来运行</strong>，最后得到的多个模型；也可以是<strong>不同的模型</strong>，在用一个数据集上训练，最后得到的多个模型。</p>
+<h5 id="利用从右到左模型重排序解码"><a href="#利用从右到左模型重排序解码" class="headerlink" title="利用从右到左模型重排序解码"></a>利用从右到左模型重排序解码</h5><p>目前一般的解码器都是从左到右地一个词一个词地译出目标语言，所以一般RNN解码器都是单方向的，但编码器都是双方向以获得更多的信息。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-d101ecb327c1be73.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>为了让解码器也能利用双方向的信息，可以训练一个模型反过来翻译目标语言，从右到左输出结果，比如说“我爱你”翻译成英文，按这样的顺序来译“you -&gt; love -&gt; I.”。</p>
+<p>之后用从右到左的模型输出的结果，来筛选从左到右模型输出的结果，就可以获得更好的翻译。</p>
+<p>当然上面这些集成方法也可以都用上，一起集成输出结果当然更好，但同时也会导致<strong>运算成本过高</strong>的问题，毕竟一个模型训练下来就要很久了，更何况几个了。</p>
+<h4 id="处理大词汇量"><a href="#处理大词汇量" class="headerlink" title="处理大词汇量"></a>处理大词汇量</h4><p>对于NMT，其中一个最大的难题就是<strong>如何处理庞大的词汇量</strong>。</p>
+<p>因为神经网络方法一般处理词汇是建立词向量表，之后通过查表将句子转换成词向量。也就是对于词向量表，每个不同的词就对应一个不同的向量。对于有些语言，因为形态学(Morphology)比较复杂，所以一个词可能会有很多很多种变形，即使意思并没差太多，这样的语言词汇量却会非常大。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-eb5e1b10ba9fe7c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>对于编码器端，会导致<strong>词向量表非常大</strong>，同时因为可能某些形态的词在整个数据集中只出现很少的次数，所以会<strong>导致稀疏问题，某些词向量根本没得到充足的训练</strong>。</p>
+<p>而对于解码器端，因为输出时会用softmax来进行概率输出，从目标语言词汇中挑选出合适的词。这会导致<strong>过大的计算量</strong>，也是一个大问题。</p>
+<p>目前大家能想到的解决这个问题的方法是，使用<strong>子词 (sub-word) </strong>而不是词(Word)来进行翻译，比如说英文里面 unhappy = un + happy.</p>
+<p>对于人来说，因为语言本能，这些都可以自然而然在脑中解构。但对于计算机就不行，得我们告诉它怎么做。</p>
+<h5 id="字节对编码-Byte-Pair-Encoding-BPE-法"><a href="#字节对编码-Byte-Pair-Encoding-BPE-法" class="headerlink" title="字节对编码 (Byte Pair Encoding, BPE) 法"></a>字节对编码 (Byte Pair Encoding, BPE) 法</h5><p>现在使用比较广泛的一个方法是BPE法，因为爱丁堡大学的<strong>Nematus</strong>系统用这个取得了很好的效果。</p>
+<p>原理的话出乎意料，和语言学没有关系，也并不是很难。主要步骤如下。</p>
+<ol>
+<li>将训练数据中所有词都表示成字节，把这些字节加入符号表，最开始大概是a, b, c…还有各种符号；</li>
+<li>然后统计符号对的出现频率，比如说th, zt…；</li>
+<li>挑出其中频率最高的符号对，加入符号表，训练数据集中所有该符号对融合，比如说t和h全变成了th。这个叫做一次融合，之后重复2,3过程，直到指定的融合次数。</li>
+</ol>
+<p>比如说爱丁堡大学在WMT16比赛中就用了89500次融合。完成这个BPE学习之后，用它来处理训练数据集，之后直接在bpe之间翻译，这样可以大大降低了词汇量。</p>
+<h3 id="使用单语言数据"><a href="#使用单语言数据" class="headerlink" title="使用单语言数据"></a>使用单语言数据</h3><p>机器翻译里面训练数据之所以难收集，主要是因为它用的是<strong>并列数据 (parallel data)</strong>，也就是源语言和目标语言之间，一句话一句话得对应起来。因此准备数据的过程特别麻烦，所以对于深度学习这种数据越多越好的模型，有时候可能数据也并不够。</p>
+<p>但同时另一方面，单独的语言数据我们又不缺，随便在网上抓一抓就很多很多。因此如何利用这些单语言数据就成了一个热门研究方向。</p>
+<p>这里列举几个比较成功的方法。主要分为增加训练数据和训练语言模型来辅助翻译。</p>
+<h5 id="回译"><a href="#回译" class="headerlink" title="回译"></a>回译</h5><p>回译的要点是，<strong>既然训练数据不足，那么就合成数据</strong>。但是怎么样合成呢？</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-f435c0d7a37e7ff4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>这里假设我们有大量的目标语言单语言数据，那么为什么不建立一个反向的翻译系统，将这些目标语言翻译成源语言，之后再用获得的并行数据来训练所需要的系统呢。</p>
+<p>这也是为什么这个技巧的名字叫做”<strong>回译 (Back Translation)</strong>“。</p>
+<h4 id="加入语言模型"><a href="#加入语言模型" class="headerlink" title="加入语言模型"></a>加入语言模型</h4><p>首先什么是语言模型？一句话，<strong>训练一个模型，然后这个模型判断你说不说的是人话</strong>，这就是语言模型，很简单吧。</p>
+<p>比方说我用脸打出来的“过以风格黑哦豆腐干会双方各黑分两个覅”就不是人话，你估计也不可能再在其他地方看到这样的句子了；而“我吃饭了”，这样正常的、有意义的、随处可见的话就是人话了。</p>
+<p>而加入语言模型主要就是判断解码器翻译出来的是不是人话，从而帮助解码器获得更好的翻译效果。</p>
+<p>至于如何学习怎么判断说的是不是人话，也就是训练语言模型，只要读书破万卷就可以了，把单语言数据丢给语言模型让自己训练就好了。</p>
+<h4 id="往返训练"><a href="#往返训练" class="headerlink" title="往返训练"></a>往返训练</h4><p><img src="http://upload-images.jianshu.io/upload_images/4787675-84693fdf68e59339.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>最后是往返训练，就是把回译的技巧用来同时训练两个模型。比如上图一个模型是从 f-&gt;e（法译英），而另一个是反过来的英译法。</p>
+<p>往返训练的流程是这样子的，假设我们有f单语言数据，那么先用正向模型翻译成e’，之后用这个e‘和f来训练反向模型。当要用e的单语言数据，只要反过来操作就好了。</p>
+<p>这样子两个好基友互相训练♂♂，最终就能都成为好模型。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/技术/">技术</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NLP/">NLP</a><a href="/tags/机器翻译/">机器翻译</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://andy-yangz.github.io/2017/12/25/神经机器翻译概览：基准模型与改进（上）/" data-title="神经机器翻译概览：基准模型与改进（上） | Andy" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/09/13/小黄人语从入门到进精神病院/" title="">
+  <strong>上一篇：</strong><br/>
+  <span>
+  (no title)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2017/11/07/11-7论文笔记Predicting-Target-Language-CCG-Supertags-Improves-Neural-Machine-Translation/"  title="论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation">
+ <strong>下一篇：</strong><br/> 
+ <span>论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基准模型（seq2seq-attention）"><span class="toc-number">1.</span> <span class="toc-text">基准模型（seq2seq+attention）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基准模型改进"><span class="toc-number">1.1.</span> <span class="toc-text">基准模型改进</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#集成解码方法-Ensemble-Decoding"><span class="toc-number">1.1.1.</span> <span class="toc-text">集成解码方法(Ensemble Decoding)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#检查点（checkpoint）集成"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">检查点（checkpoint）集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#多次运行-Multi-run-集成"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">多次运行 (Multi-run) 集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#利用从右到左模型重排序解码"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">利用从右到左模型重排序解码</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#处理大词汇量"><span class="toc-number">1.1.2.</span> <span class="toc-text">处理大词汇量</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#字节对编码-Byte-Pair-Encoding-BPE-法"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">字节对编码 (Byte Pair Encoding, BPE) 法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#使用单语言数据"><span class="toc-number">1.2.</span> <span class="toc-text">使用单语言数据</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#回译"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">回译</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#加入语言模型"><span class="toc-number">1.2.1.</span> <span class="toc-text">加入语言模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#往返训练"><span class="toc-number">1.2.2.</span> <span class="toc-text">往返训练</span></a></li></ol></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Paper-Notes/" title="Paper Notes">Paper Notes<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/技术/" title="技术">技术<sup>2</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NMT/" title="NMT">NMT<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Linguistic-Structure/" title="Linguistic Structure">Linguistic Structure<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Andy Yang in JAIST. <br/>
+			This is my blog, no matter you believe it or not, anyway I don&#39;t believe it.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2018 
+		
+		<a href="/about" target="_blank" title="Andy Yang">Andy Yang</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
