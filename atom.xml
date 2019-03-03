@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://andy-yangz.github.io/"/>
-  <updated>2019-03-03T09:44:26.557Z</updated>
+  <updated>2019-03-03T11:42:41.242Z</updated>
   <id>https://andy-yangz.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>斯坦福深度自然语言处理笔记：初入词向量</title>
+    <link href="https://andy-yangz.github.io/2019/03/03/%E6%96%AF%E5%9D%A6%E7%A6%8F%E6%B7%B1%E5%BA%A6%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E7%AC%94%E8%AE%B0%EF%BC%9A%E5%88%9D%E5%85%A5%E8%AF%8D%E5%90%91%E9%87%8F/"/>
+    <id>https://andy-yangz.github.io/2019/03/03/斯坦福深度自然语言处理笔记：初入词向量/</id>
+    <published>2019-03-03T10:02:42.000Z</published>
+    <updated>2019-03-03T11:42:41.242Z</updated>
+    
+    <content type="html"><![CDATA[<p>相信和大多非科班出身的人一样，接触深度学习，都是通过各种书籍或博客零零碎碎学习，之后做几个小项目就算是入门了。这样虽然也可以说是入行了，毕业设计也做得不算太差。但渐渐的却总心里发虚，因为对一些最基本的东西，并不太清楚。</p><p>说起模型可以头头是道，但看一些深入点的论文就头疼，于是深感基础不足，希望在2019年能尽量补上一些。</p><p>此次斯坦福的深度自然语言处理课，也就是 cs224n，时隔两年，重新开放，加入不少新东西。曾经两年前，刚入门的时候有挑战此课，但没多久就卡住了，也就没坚持下去。</p><p><img src="https://ws1.sinaimg.cn/large/006tKfTcly1g0ptoo8yofj30hs0hsmy2.jpg" alt=""></p><p>两年后重新看，或许是经验增多，看过第一课，好像能看懂许多，不由欣喜万分。想当然的就想和人分享这种喜悦，做了点笔记拿出来，希望对大家有些帮组。</p><h2 id="大纲与改进"><a href="#大纲与改进" class="headerlink" title="大纲与改进"></a>大纲与改进</h2><p>斯坦福的 cs224n 主要希望讲解的内容包括</p><ul><li>现代深度学习基础知识，以及其在自然语言处理（NLP）方面的应用，特别是 RNN 与 Attention 模型</li><li>对人类语言，还有其理解与生成之困难，有个大局认识</li><li>对NLP重要问题的理解，并能够用 Pytorch 搭建相关系统，特别是词意，依存分析，机器翻译，机器问答。</li></ul><p>比起17年的课程最大的改进，有两点</p><ul><li>加入大量新内容，比如新的 <strong>Transformer</strong>，安全性讨论，还有多任务学习</li><li>深度学习框架从 Tensorflow 换成 <strong>Pytorch</strong>（之前 Fast.ai 也做过类似转变）</li></ul><p>那就不废话了，直接进入正题吧。</p><h2 id="怎么让计算机理解一个词"><a href="#怎么让计算机理解一个词" class="headerlink" title="怎么让计算机理解一个词"></a>怎么让计算机理解一个词</h2><p>首先，大家都知道，在日常中用到语言的最小单位是词（非日常或许还有词根词缀词素等等子词单位）。而要想表示语言，自然也就得先从词入手。</p><p>那么，怎么表示一个词呢？确切说，<strong>怎么在计算机上表示一个词</strong>？因为做自然语言处理，其实就是用计算机对自然语言进行处理，如果连词都理解不了那就更别谈语言处理了。</p><p>当然，现在显然还做不到给计算机一个词它便能像人一样理解。因此只能退而求其次，用其他一些计算机更能理解的方法。</p><h3 id="不是那么美的尝试"><a href="#不是那么美的尝试" class="headerlink" title="不是那么美的尝试"></a>不是那么美的尝试</h3><p>可能了解一些的同学会马上举起手，“我知道，我知道，不就是 Word2Vec 吗”</p><p>不过在 Word2Vec 之前，还要先提提一些远古的东西。</p><h4 id="WordNet-词网大法"><a href="#WordNet-词网大法" class="headerlink" title="WordNet 词网大法"></a>WordNet 词网大法</h4><p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1g0ps9u5ww7j30ma0anwfh.jpg" alt=""></p><p>WordNet 是一个英文词汇数据库，如其名暗示，它是由各种词，还有它们之间关系组成的网络。具体到使用时，就像是一个字典加词典的组合。你可以查询一个词，获得它的意思，以及同义词，上义词等等。</p><p>于是用 WordNet 来表示一个词意思的时，就可以<strong>用它的同义词或上义词表</strong>，这有些类似之后分布式表示。</p><p>然而 WordNet 开始于1985年，其实也有类似当时风靡一时专家系统的特点，那就是觉得可以靠人或专家们，把所有规则知识都编入一个系统。然后事实证明<strong>效果并不好</strong>。</p><p>于是用 WordNet 会出现的问题也是：</p><ul><li>不包含新单词和新意思</li><li>带有主观性</li><li>需要大量人力</li><li>不好计算相似度</li></ul><h4 id="One-hot-独热编码"><a href="#One-hot-独热编码" class="headerlink" title="One-hot 独热编码"></a>One-hot 独热编码</h4><p>这个是种极为简单的编码方式，对每个离散的词，用向量上的一位表示。如果有 V 个词的话，那么每个词的表示都是 V 纬的向量，V 很大的话，效率就很低。</p><p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1g0psbp2j4cj30q00kqdgt.jpg" alt=""></p><p>这个也有很多问题，首先正如所见，得到的向量非常稀疏，也就是大部分都是 0，带来效率问题，而且向量正交，不好计算相似度。</p><h3 id="分布语义的启发"><a href="#分布语义的启发" class="headerlink" title="分布语义的启发"></a>分布语义的启发</h3><p>首先什么是分布语义，在语言学中，有这样的说法：<strong>一个词的词义是由经常出现在它周围的词决定的</strong>。反过来说两个词它们周围的词很像的话，那这两个词意思也会相近。</p><p>这里有个很有意思的点，那就是词本身的意思，是由词决定的，这就形成了一个怪圈，就像是一个从地上把自己提起来的人。</p><p>但如果再进一步想就会发现，其实<strong>词本身是没有意义的</strong>，或者说词本身的意义来自于物理世界。直接指向这个词的物质，或周围环境，亦或这个词上下文所指向的物理世界，这也是最近研究<a href="https://worldmodels.github.io/" target="_blank" rel="noopener">世界模型</a>的思想来源。</p><p>其实更广义上来讲，一个词的意思，完全是由某时某刻，现实中的上下文来表示，这里的上下文包括事物本身，与之相关事物，阅读人的经历与理解…</p><p>所以按照这层角度来看，没有任何一个词的意思是相同，即使这个词字面相同，但只要它存在的背景变换了，那么它的意思就变了。就如我们永远不可能踏入同一条河流，一个词也永远不可能是一个意思，这也是为什么人类沟通中会有如此多的误解的原因之一。</p><p>但之所以我们还能交流，是因为大部分背景还是相同的，主要意思便也都还是相同的。</p><p>话题扯远了，但是总之现代统计自然语言处理中最成功的一个 idea 就是：</p><blockquote><p>你可以通过一个词周围的词了解一个词 - (J. R. Firth 1957: 11)</p></blockquote><p>因此就可以尝试用一个词大量的上下文信息来表示一个词的意思。</p><h4 id="词向量？词嵌入？词表示？都是分布式表示"><a href="#词向量？词嵌入？词表示？都是分布式表示" class="headerlink" title="词向量？词嵌入？词表示？都是分布式表示"></a>词向量？词嵌入？词表示？都是分布式表示</h4><p>先来解释一下这三个词吧，其实都讲得是一个东西，只是从三个不同角度来看。</p><ul><li>词向量（Word Vector）：最直接的说法，因为我们把词表示成了一个向量；</li><li>词嵌入（Word Embedding）：这个有点难理解，但其实说的是，把在 one-hot 里面本来应该是很大的 V 纬向量表示，嵌入到了低纬度的空间里面（降维打击？！）；</li><li>词表示（Word Representation）： 其实就是说这表示一个词。</li></ul><p><img src="https://upload-images.jianshu.io/upload_images/4787675-8a273c9ba7fc3a8f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p><h4 id="Word2Vec"><a href="#Word2Vec" class="headerlink" title="Word2Vec"></a>Word2Vec</h4><p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1g0pu7h106oj317l0r8n12.jpg" alt=""></p><p>千幸万苦终于到了我们的大明星 Word2Vec，为什么之前要提那么多关于分布语义的废话呢。</p><p>因为 Word2Vec 就是学习上面提到的分布式词表示的一个框架。刚入门容易混淆的一点是把 Word2Vec 和 Word Vector 搞混，其实 word2vec 并不是指词向量全部，只是其中一种。之前其实也有人训练出过分布式词表示，但是受限于硬件与训练方法，所以效果没有 Word2Vec 这么好。</p><p>关于 Word2Vec 中主要思想包括</p><ul><li>有大量文本（保证覆盖主要意思的自然文本，而不是像WordNet 这样人造的）</li><li>一个固定的词表中每个词由向量表示</li><li>遍历文本中每个位置，取中心词 c 和上下文 o</li><li>通过计算 c 和 o 的向量相似，计算给出 c 有多大概率出现上下文 o</li><li>通过最大化以上概率，不断调整词向量</li></ul><p><img src="https://upload-images.jianshu.io/upload_images/4787675-8ec2cca7638b6193.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p><p>这只是 Word2Vec 里提到两个方法中的一个 Skip-gram。另一个 CBOW 的思想也类似，不过是用周围预测中心词。</p><p>其实 Word2Vec 论文中更加出彩的是其中的<strong>训练方法</strong>，而不是这个思想，Mikolov 的工程能力非常强，通过各种训练的技巧，利用神经网络将 word2vec 训练成功。之后会再介绍。</p><p>Word2Vec 里的技巧，Yoav Goldberg 发现如果把这些技巧用在其他传统的统计学习词向量训练方法中的话，也能取得很好的效果。Goldberg 这篇论文非常精彩，之后也会简单介绍一下。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;相信和大多非科班出身的人一样，接触深度学习，都是通过各种书籍或博客零零碎碎学习，之后做几个小项目就算是入门了。这样虽然也可以说是入行了，毕业设计也做得不算太差。但渐渐的却总心里发虚，因为对一些最基本的东西，并不太清楚。&lt;/p&gt;
+&lt;p&gt;说起模型可以头头是道，但看一些深入点的论
+      
+    
+    </summary>
+    
+      <category term="NLP" scheme="https://andy-yangz.github.io/categories/NLP/"/>
+    
+    
+      <category term="cs224n" scheme="https://andy-yangz.github.io/tags/cs224n/"/>
+    
+      <category term="笔记" scheme="https://andy-yangz.github.io/tags/%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
   
   <entry>
     <title>论文笔记：LSTM： A Search Space Odyssey</title>
