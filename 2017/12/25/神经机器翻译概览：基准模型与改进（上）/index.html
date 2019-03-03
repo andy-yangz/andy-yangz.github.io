@@ -1,6 +1,6 @@
 
  <!DOCTYPE HTML>
-<html >
+<html lang="Chinese, English">
 <head>
   <meta charset="UTF-8">
   
@@ -18,7 +18,7 @@
 <meta property="og:url" content="https://andy-yangz.github.io/2017/12/25/神经机器翻译概览：基准模型与改进（上）/index.html">
 <meta property="og:site_name" content="Andy">
 <meta property="og:description" content="最近一段时间在研究的一些东西。 介绍一下当前机器翻译领域很火的神经机器翻译(Neural Machine Translation ，简称NMT)领域的大致状况，最近的一些进展（内容主要来自Philipp Koehn的 Statistical Machine Translation 还未发布的草稿，想了解更详细内容，读原文)。 首先什么是机器翻译？ 显而易见就是用机器来翻译，这里机器说的是计算机了。">
-<meta property="og:locale" content="default">
+<meta property="og:locale" content="Chinese, English">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-c9b0ed638057d8c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-87db57aaaadf12a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-6ae261d23593e48e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-eb5e1b10ba9fe7c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-f435c0d7a37e7ff4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-84693fdf68e59339.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-09-13T00:17:27.638Z">
+<meta property="og:updated_time" content="2019-03-03T08:56:11.048Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="神经机器翻译概览：基准模型与改进（上）">
 <meta name="twitter:description" content="最近一段时间在研究的一些东西。 介绍一下当前机器翻译领域很火的神经机器翻译(Neural Machine Translation ，简称NMT)领域的大致状况，最近的一些进展（内容主要来自Philipp Koehn的 Statistical Machine Translation 还未发布的草稿，想了解更详细内容，读原文)。 首先什么是机器翻译？ 显而易见就是用机器来翻译，这里机器说的是计算机了。">
@@ -59,7 +59,7 @@
 			
 			<div id="textlogo">
 				<h1 class="site-name"><a href="/" title="Andy">Andy</a></h1>
-				<h2 class="blog-motto">Ciao ~</h2>
+				<h2 class="blog-motto">I&#39;m a Master student in Natural Language Processing and an algorithm engineer at TrioTech. I blog about Machine Learning, Deep Learning, and NLP.</h2>
 			</div>
 			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
@@ -193,7 +193,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/技术/">技术</a>
+  <a class="article-category-link" href="/categories/Natural-Language-Processing/">Natural Language Processing</a>
 </div>
 
 
@@ -222,10 +222,10 @@
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2018/09/13/小黄人语从入门到进精神病院/" title="">
+ <a href="/2018/09/13/论文笔记：Sequence-to-Dependency-Neural-Machine-Translation/" title="论文笔记：Sequence-to-Dependency Neural Machine Translation">
   <strong>上一篇：</strong><br/>
   <span>
-  (no title)</span>
+  论文笔记：Sequence-to-Dependency Neural Machine Translation</span>
 </a>
 </div>
 
@@ -258,6 +258,12 @@
 <aside class="clearfix">
 
   
+<div class="github-card">
+<p class="asidetitle">Github Card</p>
+<div class="github-card" data-github="https://github.com/andy-yangz" data-theme="medium"></div>
+<script type="text/javascript" src="//cdn.jsdelivr.net/github-cards/latest/widget.js" ></script>
+</div>
+
 
 
   
@@ -266,11 +272,19 @@
 		<ul>
 		
 		  
+		
+		  
+			<li><a href="/categories/Natural-Language-Processing/" title="Natural Language Processing">Natural Language Processing<sup>2</sup></a></li>
+		  
+		
+		  
 			<li><a href="/categories/Paper-Notes/" title="Paper Notes">Paper Notes<sup>5</sup></a></li>
 		  
 		
 		  
-			<li><a href="/categories/技术/" title="技术">技术<sup>2</sup></a></li>
+		
+		  
+			<li><a href="/categories/语言学/" title="语言学">语言学<sup>1</sup></a></li>
 		  
 		
 		</ul>
@@ -302,9 +316,38 @@
 				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
 			
 		
+			
+				<li><a href="/tags/恶搞/" title="恶搞">恶搞<sup>1</sup></a></li>
+			
+		
 		</ul>
 </div>
 
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.jianshu.com/u/2bce591750a0" target="_blank" title="简书(坂本龙一)">简书(坂本龙一)</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://upload-images.jianshu.io/upload_images/4787675-731072fb09d7426a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" target="_blank" title="公众号(安迪的写作间)">公众号(安迪的写作间)</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://medium.com/andy-yangz" target="_blank" title="Medium">Medium</a>
+            
+          </li>
+        
+    </ul>
+</div>
 
   
 
@@ -331,6 +374,8 @@
 	 
 	<div class="social-font" class="clearfix">
 		
+		
+		<a href="https://github.com/https://github.com/andy-yangz" target="_blank" class="icon-github" title="github"></a>
 		
 		
 		
