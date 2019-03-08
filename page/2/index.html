@@ -4,39 +4,23 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>神经机器翻译概览：基准模型与改进（下） | Andy</title>
+    <title>Andy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Andy Yang">
     
 
     
-    <meta name="description" content="神经机器翻译概览：基准模型与改进（下） 光看下篇小心变成梅超风，上篇： 神经机器翻译概览：基准模型与改进（上）  之前在上篇主要提到了神经机器翻译的基准模型，序列到序列+注意力机制。 还从多个方面谈到了怎么对基准模型进行改进，其中包括：  利用多个模型的集成解码 怎么处理庞大的词汇量 如何使用单语言数据  上面这三个都没有触及到，对基准模型的修改，更多是集成和利用数据。 在下篇中，我们开始讨论">
-<meta name="keywords" content="NLP,机器翻译">
-<meta property="og:type" content="article">
-<meta property="og:title" content="神经机器翻译概览：基准模型与改进（下）">
-<meta property="og:url" content="https://andy-yangz.github.io/2017/10/31/神经机器翻译概览：基准模型与改进（下）/index.html">
+    <meta name="description" content="深度学习，自然语言处理攻城狮，爱好广泛，欢迎勾搭。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Andy">
+<meta property="og:url" content="https://andy-yangz.github.io/page/2/index.html">
 <meta property="og:site_name" content="Andy">
-<meta property="og:description" content="神经机器翻译概览：基准模型与改进（下） 光看下篇小心变成梅超风，上篇： 神经机器翻译概览：基准模型与改进（上）  之前在上篇主要提到了神经机器翻译的基准模型，序列到序列+注意力机制。 还从多个方面谈到了怎么对基准模型进行改进，其中包括：  利用多个模型的集成解码 怎么处理庞大的词汇量 如何使用单语言数据  上面这三个都没有触及到，对基准模型的修改，更多是集成和利用数据。 在下篇中，我们开始讨论">
+<meta property="og:description" content="深度学习，自然语言处理攻城狮，爱好广泛，欢迎勾搭。">
 <meta property="og:locale" content="Chinese, English">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-2253286ca6904fee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-e4eba49c74c019e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-8babc056e64cc952.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-20b3f0e49c7d824f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-bde27df49b4e48a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-9a8d92d1869a379f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-eb65626ba90aed23.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-866f5705d2cfe349.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-f96623de57ab4d4e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-335697e0b9ec3c27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-1790eac59459f18d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-663b111296be1767.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-f7093df6e016561d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2019-03-03T08:55:57.664Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="神经机器翻译概览：基准模型与改进（下）">
-<meta name="twitter:description" content="神经机器翻译概览：基准模型与改进（下） 光看下篇小心变成梅超风，上篇： 神经机器翻译概览：基准模型与改进（上）  之前在上篇主要提到了神经机器翻译的基准模型，序列到序列+注意力机制。 还从多个方面谈到了怎么对基准模型进行改进，其中包括：  利用多个模型的集成解码 怎么处理庞大的词汇量 如何使用单语言数据  上面这三个都没有触及到，对基准模型的修改，更多是集成和利用数据。 在下篇中，我们开始讨论">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4787675-2253286ca6904fee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:title" content="Andy">
+<meta name="twitter:description" content="深度学习，自然语言处理攻城狮，爱好广泛，欢迎勾搭。">
 
     
     <link rel="alternative" href="/atom.xml" title="Andy" type="application/atom+xml">
@@ -90,10 +74,12 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
+      <div id="main">
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
   <h1 itemprop="name">
     
       <a href="/2017/10/31/神经机器翻译概览：基准模型与改进（下）/" title="神经机器翻译概览：基准模型与改进（下）" itemprop="url">神经机器翻译概览：基准模型与改进（下）</a>
@@ -107,16 +93,9 @@
     
   </p>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">Contents</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#神经机器翻译概览：基准模型与改进（下）"><span class="toc-number">1.</span> <span class="toc-text">神经机器翻译概览：基准模型与改进（下）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#深层模型"><span class="toc-number">1.1.</span> <span class="toc-text">深层模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#深层解码器"><span class="toc-number">1.1.1.</span> <span class="toc-text">深层解码器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#深层编码器"><span class="toc-number">1.1.2.</span> <span class="toc-text">深层编码器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引导对齐-Guided-Alignment-训练"><span class="toc-number">1.2.</span> <span class="toc-text">引导对齐 (Guided Alignment) 训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模型的覆盖-Coverage"><span class="toc-number">1.3.</span> <span class="toc-text">模型的覆盖(Coverage)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#在翻译阶段设置约束保证强制覆盖"><span class="toc-number">1.3.1.</span> <span class="toc-text">在翻译阶段设置约束保证强制覆盖</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#覆盖模型"><span class="toc-number">1.3.2.</span> <span class="toc-text">覆盖模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fertility-可繁殖性"><span class="toc-number">1.3.3.</span> <span class="toc-text">Fertility (可繁殖性)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#域适应-Domain-Adaption"><span class="toc-number">1.4.</span> <span class="toc-text">域适应 (Domain Adaption)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从大量数据中采样域内数据"><span class="toc-number">1.4.1.</span> <span class="toc-text">从大量数据中采样域内数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#只有域内单语言数据"><span class="toc-number">1.4.2.</span> <span class="toc-text">只有域内单语言数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多领域模型"><span class="toc-number">1.4.3.</span> <span class="toc-text">多领域模型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用语言学标记"><span class="toc-number">1.5.</span> <span class="toc-text">利用语言学标记</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#输入端的语言学标记"><span class="toc-number">1.5.1.</span> <span class="toc-text">输入端的语言学标记</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#输出端的语言学标记"><span class="toc-number">1.5.2.</span> <span class="toc-text">输出端的语言学标记</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#语言结构化的模型"><span class="toc-number">1.5.3.</span> <span class="toc-text">语言结构化的模型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多语言对"><span class="toc-number">1.6.</span> <span class="toc-text">多语言对</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#多输入语言"><span class="toc-number">1.6.1.</span> <span class="toc-text">多输入语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多输出语言"><span class="toc-number">1.6.2.</span> <span class="toc-text">多输出语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分享部件"><span class="toc-number">1.6.3.</span> <span class="toc-text">分享部件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#替代模型"><span class="toc-number">2.</span> <span class="toc-text">替代模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积模型"><span class="toc-number">2.1.</span> <span class="toc-text">卷积模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积-注意力"><span class="toc-number">2.2.</span> <span class="toc-text">卷积+注意力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自注意力机制"><span class="toc-number">2.3.</span> <span class="toc-text">自注意力机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#当前的挑战（NMT和PSMT的比较）"><span class="toc-number">3.</span> <span class="toc-text">当前的挑战（NMT和PSMT的比较）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#域误配问题"><span class="toc-number">3.1.</span> <span class="toc-text">域误配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练数据量问题"><span class="toc-number">3.2.</span> <span class="toc-text">训练数据量问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#噪声问题"><span class="toc-number">3.3.</span> <span class="toc-text">噪声问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#词匹配问题"><span class="toc-number">3.4.</span> <span class="toc-text">词匹配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#束搜索-Beam-Search"><span class="toc-number">3.5.</span> <span class="toc-text">束搜索(Beam Search)</span></a></li></ol></li></ol>
-		
-		</div>
-		
-		<h2 id="神经机器翻译概览：基准模型与改进（下）"><a href="#神经机器翻译概览：基准模型与改进（下）" class="headerlink" title="神经机器翻译概览：基准模型与改进（下）"></a>神经机器翻译概览：基准模型与改进（下）</h2><blockquote>
+    <div class="article-content">
+        
+        <h2 id="神经机器翻译概览：基准模型与改进（下）"><a href="#神经机器翻译概览：基准模型与改进（下）" class="headerlink" title="神经机器翻译概览：基准模型与改进（下）"></a>神经机器翻译概览：基准模型与改进（下）</h2><blockquote>
 <p>光看下篇小心变成梅超风，上篇：</p>
 <p><a href="https://www.jianshu.com/p/546750a32c92" target="_blank" rel="noopener">神经机器翻译概览：基准模型与改进（上）</a></p>
 </blockquote>
@@ -253,9 +232,14 @@
 <h3 id="训练数据量问题"><a href="#训练数据量问题" class="headerlink" title="训练数据量问题"></a>训练数据量问题</h3><p>有足够多的数据的话，NMT可以达到很好的结果。</p>
 <h3 id="噪声问题"><a href="#噪声问题" class="headerlink" title="噪声问题"></a>噪声问题</h3><p>NMT更加不能抵抗数据中的噪音。</p>
 <h3 id="词匹配问题"><a href="#词匹配问题" class="headerlink" title="词匹配问题"></a>词匹配问题</h3><h3 id="束搜索-Beam-Search"><a href="#束搜索-Beam-Search" class="headerlink" title="束搜索(Beam Search)"></a>束搜索(Beam Search)</h3><p>Fast Alignment</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
@@ -273,44 +257,28 @@
 
 
 
-	<div class="article-share" id="share">
-	
-	  <div data-url="https://andy-yangz.github.io/2017/10/31/神经机器翻译概览：基准模型与改进（下）/" data-title="神经机器翻译概览：基准模型与改进（下） | Andy" data-tsina="" class="share clearfix">
-	  </div>
-	
-	</div>
 
+<div class="comments-count">
+	
+</div>
 
 </footer>
 
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2017/11/06/论文笔记：Improved-Neural-Machine-Translation-with-a-Syntax-Aware-Encoder-and-Decoder/" title="论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder">
-  <strong>上一篇：</strong><br/>
-  <span>
-  论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</span>
-</a>
+
+    </article>
+
+
+
+
+
+
+
+  <nav id="page-nav" class="clearfix">
+    <a class="extend prev" rel="prev" href="/"><span></span>Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
 </div>
-
-
-</nav>
-
-	
-
-
-</div>  
       <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">Contents</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#神经机器翻译概览：基准模型与改进（下）"><span class="toc-number">1.</span> <span class="toc-text">神经机器翻译概览：基准模型与改进（下）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#深层模型"><span class="toc-number">1.1.</span> <span class="toc-text">深层模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#深层解码器"><span class="toc-number">1.1.1.</span> <span class="toc-text">深层解码器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#深层编码器"><span class="toc-number">1.1.2.</span> <span class="toc-text">深层编码器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引导对齐-Guided-Alignment-训练"><span class="toc-number">1.2.</span> <span class="toc-text">引导对齐 (Guided Alignment) 训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模型的覆盖-Coverage"><span class="toc-number">1.3.</span> <span class="toc-text">模型的覆盖(Coverage)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#在翻译阶段设置约束保证强制覆盖"><span class="toc-number">1.3.1.</span> <span class="toc-text">在翻译阶段设置约束保证强制覆盖</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#覆盖模型"><span class="toc-number">1.3.2.</span> <span class="toc-text">覆盖模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fertility-可繁殖性"><span class="toc-number">1.3.3.</span> <span class="toc-text">Fertility (可繁殖性)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#域适应-Domain-Adaption"><span class="toc-number">1.4.</span> <span class="toc-text">域适应 (Domain Adaption)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#从大量数据中采样域内数据"><span class="toc-number">1.4.1.</span> <span class="toc-text">从大量数据中采样域内数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#只有域内单语言数据"><span class="toc-number">1.4.2.</span> <span class="toc-text">只有域内单语言数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多领域模型"><span class="toc-number">1.4.3.</span> <span class="toc-text">多领域模型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#利用语言学标记"><span class="toc-number">1.5.</span> <span class="toc-text">利用语言学标记</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#输入端的语言学标记"><span class="toc-number">1.5.1.</span> <span class="toc-text">输入端的语言学标记</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#输出端的语言学标记"><span class="toc-number">1.5.2.</span> <span class="toc-text">输出端的语言学标记</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#语言结构化的模型"><span class="toc-number">1.5.3.</span> <span class="toc-text">语言结构化的模型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多语言对"><span class="toc-number">1.6.</span> <span class="toc-text">多语言对</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#多输入语言"><span class="toc-number">1.6.1.</span> <span class="toc-text">多输入语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多输出语言"><span class="toc-number">1.6.2.</span> <span class="toc-text">多输出语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分享部件"><span class="toc-number">1.6.3.</span> <span class="toc-text">分享部件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#替代模型"><span class="toc-number">2.</span> <span class="toc-text">替代模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积模型"><span class="toc-number">2.1.</span> <span class="toc-text">卷积模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#卷积-注意力"><span class="toc-number">2.2.</span> <span class="toc-text">卷积+注意力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自注意力机制"><span class="toc-number">2.3.</span> <span class="toc-text">自注意力机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#当前的挑战（NMT和PSMT的比较）"><span class="toc-number">3.</span> <span class="toc-text">当前的挑战（NMT和PSMT的比较）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#域误配问题"><span class="toc-number">3.1.</span> <span class="toc-text">域误配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练数据量问题"><span class="toc-number">3.2.</span> <span class="toc-text">训练数据量问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#噪声问题"><span class="toc-number">3.3.</span> <span class="toc-text">噪声问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#词匹配问题"><span class="toc-number">3.4.</span> <span class="toc-text">词匹配问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#束搜索-Beam-Search"><span class="toc-number">3.5.</span> <span class="toc-text">束搜索(Beam Search)</span></a></li></ol></li></ol>
- 
-  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
@@ -512,89 +480,12 @@ $(document).ready(function(){
       m.removeClass('moveMain');
       a.css('display', 'block').removeClass('fadeOut');
       o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
         
     }
   });
 });
 </script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
 
 
 
@@ -665,4 +556,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
-</html>
+ </html>

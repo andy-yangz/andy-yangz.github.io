@@ -1,0 +1,610 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese, English">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>理解L1，L2范数在机器学习中的应用 | Andy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Andy Yang">
+    
+
+    
+    <meta name="description" content="理解L1，L2 范数L1，L2 范数即 L1-norm 和 L2-norm，自然，有L1、L2便也有L0、L3等等。因为在机器学习领域，L1 和 L2 范数应用比较多，比如作为正则项在回归中的使用 Lasso Regression(L1) 和 Ridge Regression(L2)。 因此，此两者的辨析也总被提及，或是考到。不过在说明两者定义和区别前，先来谈谈什么是范数（Norm）吧。 什么是范">
+<meta name="keywords" content="正则化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解L1，L2范数在机器学习中的应用">
+<meta property="og:url" content="https://andy-yangz.github.io/2019/03/09/理解L1，L2范数/index.html">
+<meta property="og:site_name" content="Andy">
+<meta property="og:description" content="理解L1，L2 范数L1，L2 范数即 L1-norm 和 L2-norm，自然，有L1、L2便也有L0、L3等等。因为在机器学习领域，L1 和 L2 范数应用比较多，比如作为正则项在回归中的使用 Lasso Regression(L1) 和 Ridge Regression(L2)。 因此，此两者的辨析也总被提及，或是考到。不过在说明两者定义和区别前，先来谈谈什么是范数（Norm）吧。 什么是范">
+<meta property="og:locale" content="Chinese, English">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-84f979137efb8356.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-bdfe4613e0b4eebd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-9b029dab47a11f05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-d785512015b3f21a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-a19e3c582d80511f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-554d883f54c7e06e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-98061b1e68943fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-9dbf61ed70a87c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-c0e119a8b70137bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-a0ccc40c71f79a68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-81d41174acd51397.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-8f1588a5c965d070.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4787675-9c651d589122fd97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-8fc97fc06595c3e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-4788167230fdfca4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-072e8d734157de67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4787675-ad5d05c63c4c4e49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2019-03-08T17:01:10.258Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解L1，L2范数在机器学习中的应用">
+<meta name="twitter:description" content="理解L1，L2 范数L1，L2 范数即 L1-norm 和 L2-norm，自然，有L1、L2便也有L0、L3等等。因为在机器学习领域，L1 和 L2 范数应用比较多，比如作为正则项在回归中的使用 Lasso Regression(L1) 和 Ridge Regression(L2)。 因此，此两者的辨析也总被提及，或是考到。不过在说明两者定义和区别前，先来谈谈什么是范数（Norm）吧。 什么是范">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4787675-84f979137efb8356.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Andy" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Andy" title="Andy"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Andy">Andy</a></h1>
+				<h2 class="blog-motto">I&#39;m a Master student in Natural Language Processing and an algorithm engineer at TrioTech. I blog about Machine Learning, Deep Learning, and NLP.</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:andy-yangz.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2019/03/09/理解L1，L2范数/" title="理解L1，L2范数在机器学习中的应用" itemprop="url">理解L1，L2范数在机器学习中的应用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2019-03-08T16:59:17.000Z" itemprop="datePublished"> Published 2019-03-09</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#理解L1，L2-范数"><span class="toc-number">1.</span> <span class="toc-text">理解L1，L2 范数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是范数？"><span class="toc-number">1.1.</span> <span class="toc-text">什么是范数？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#L1-和-L2-范数的定义"><span class="toc-number">1.2.</span> <span class="toc-text">L1 和 L2 范数的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#我们可以担当损失函数"><span class="toc-number">1.3.</span> <span class="toc-text">我们可以担当损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#我们还能担当正则项"><span class="toc-number">1.4.</span> <span class="toc-text">我们还能担当正则项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
+		
+		</div>
+		
+		<h3 id="理解L1，L2-范数"><a href="#理解L1，L2-范数" class="headerlink" title="理解L1，L2 范数"></a>理解L1，L2 范数</h3><p>L1，L2 范数即 <strong>L1-norm</strong> 和 <strong>L2-norm</strong>，自然，有L1、L2便也有L0、L3等等。因为在机器学习领域，L1 和 L2 范数应用比较多，比如作为正则项在回归中的使用 <em>Lasso Regression</em>(L1) 和 <em>Ridge Regression</em>(L2)。</p>
+<p>因此，此两者的辨析也总被提及，或是考到。不过在说明两者定义和区别前，先来谈谈什么是范数（Norm）吧。</p>
+<h4 id="什么是范数？"><a href="#什么是范数？" class="headerlink" title="什么是范数？"></a>什么是范数？</h4><p>在线性代数以及一些数学领域中，norm 的定义是</p>
+<blockquote>
+<p>a function that assigns a strictly positive length or size to each vector in a vector space， except for the zero vector. ——Wikipedia</p>
+</blockquote>
+<p>简单点说，一个向量的 norm 就是将该向量<strong>投影到 [0, ) 范围内的值</strong>，其中 0 值只有零向量的 norm 取到。看到这样的一个范围，相信大家就能想到其与现实中距离的类比，于是在机器学习中 norm 也就总被拿来<strong>表示距离关系</strong>：根据怎样怎样的范数，这两个向量有多远。</p>
+<p>上面这个怎样怎样也就是范数种类，通常我们称为p-norm，严格定义是：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-84f979137efb8356.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>其中当 p 取 1 时被称为 1-norm，也就是提到的 <strong>L1-norm</strong>，同理 <strong>L2-norm</strong> 可得。</p>
+<h4 id="L1-和-L2-范数的定义"><a href="#L1-和-L2-范数的定义" class="headerlink" title="L1 和 L2 范数的定义"></a>L1 和 L2 范数的定义</h4><p>根据上述公式 L1-norm 和 L2-norm 的定义也就自然而然得到了。</p>
+<p>先将 p=1 代入公式，就有了 L1-norm 的定义：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-bdfe4613e0b4eebd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>然后代入 p=2，L2-norm 也有了：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9b029dab47a11f05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>L2 展开就是熟悉的欧几里得范数：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-d785512015b3f21a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>题外话，其中 L1-norm 又叫做 taxicab-norm 或者 Manhattan-norm，可能最早提出的大神直接用在曼哈顿区坐出租车来做比喻吧。下图中绿线是两个黑点的 L2 距离，而其他几根就是 taxicab 也就是 L1 距离，确实很像我们平时用地图时走的路线了。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-a19e3c582d80511f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>L1 和 L2 范数在机器学习上最主要的应用大概分下面两类</p>
+<ul>
+<li>作为<strong>损失函数</strong>使用</li>
+<li>作为<strong>正则项</strong>使用也即所谓 <strong>L1-regularization</strong> 和 <strong>L2-regularization</strong></li>
+</ul>
+<h4 id="我们可以担当损失函数"><a href="#我们可以担当损失函数" class="headerlink" title="我们可以担当损失函数"></a>我们可以担当损失函数</h4><p>先来看个回归问题</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-554d883f54c7e06e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>我们需要做的是，获得一条线，让数据点到线上的总距离（也就是error）最小。</p>
+<p>还记得之前在范数介绍中提到的用来表示距离吗，于是也可以用能表示距离的 L1-norm 和 L2-norm 来作为损失函数了。</p>
+<p>首先是 L1-norm 损失函数，又被称为 <strong>least absolute deviation (LAD，最小绝对偏差)</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-98061b1e68943fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>如果我们最小化上面的损失函数，其实就是在最小化预测值  和目标值  的绝对值。</p>
+<p>之后是大家最熟悉的 L2-norm 损失函数，又有大名<strong>最小二乘误差 (least squares error, LSE)</strong>:</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9dbf61ed70a87c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>这个便不多解释了。</p>
+<p>那么问题来了，这里不谈挖掘机，为什么大家一般都用 L2 损失函数，却不用 L1 呢？</p>
+<p>这个就说来话长了，如果你问一个学习过微积分的同学，如何求一个方程的最小值，他/她大概会想当然的说：“求导，置零，解方程。” 号称微积分届的农夫三拳。</p>
+<p>但如果给出一个绝对值的方程，突然就会发现农夫三拳不管用了，求最小值就有点麻烦了。主要是因为绝对值的倒数是不连续的。</p>
+<p>同样的对于 L1 和 L2 损失函数的选择，也会碰到同样的问题，所以最后大家一般用 L2 损失函数而不用 L1 损失函数的原因就是：</p>
+<p><strong>因为计算方便！</strong></p>
+<p>可以直接求导获得取最小值时各个参数的取值。</p>
+<p>此外还有一点，<strong>用 L2 一定只有一条最好的预测线，L1 则因为其性质可能存在多个最优解</strong>。（更多关于L1 L2 损失函数参考索引5）</p>
+<p>当然 L1 损失函数难道就没有什么好处了吗，也是有的，那就是<strong>鲁棒性 (Robust) 更强，对异常值更不敏感</strong>。</p>
+<h4 id="我们还能担当正则项"><a href="#我们还能担当正则项" class="headerlink" title="我们还能担当正则项"></a>我们还能担当正则项</h4><p>因为机器学习中众所周知的过拟合问题，所以用正则化防止过拟合，成了机器学习中一个非常重要的技巧。</p>
+<p>但数学上来讲，其实就是在损失函数中加个<strong>正则项（Regularization Term）</strong>，来防止参数拟合得过好。</p>
+<p>L1-regularization 和 L2-regularization 便都是我们常用的正则项，两者公式的例子分别如下</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-c0e119a8b70137bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-a0ccc40c71f79a68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>这两个正则项最主要的不同，包括两点：</p>
+<ul>
+<li>如上面提到的，<strong>L2 计算起来更方便</strong>，而 L1 在特别是非稀疏向量上的计算效率就很低；</li>
+<li>还有就是 L1 最重要的一个特点，<strong>输出稀疏</strong>，会把不重要的特征直接置零，而 L2 则不会；</li>
+<li>最后，如之前多次提过，L2 有唯一解，而 L1 不是。</li>
+</ul>
+<p>这里关于第二条输出稀疏我想再进行一些详细讲解，因为 L1 天然的输出稀疏性，把不重要的特征都置为 0，所以它也是<strong>一个天然的特征选择器</strong>。</p>
+<p>可是为什么 L1 会有这样的性质呢，而 L2 没有呢？这里用个直观的例子来讲解。</p>
+<p>来一步一步看吧，首先获知用梯度下降法来优化时，需要求导获得梯度，然后用以更新参数。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-81d41174acd51397.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>于是分别先对 L1 正则项和 L2 正则项来进行求导，可得。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-8f1588a5c965d070.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9c651d589122fd97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>之后将 L1 和 L2 和它们的导数画在图上</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-8fc97fc06595c3e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-4788167230fdfca4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>于是会发现，在梯度更新时，不管 L1 的大小是多少（只要不是0）梯度都是1或者-1，所以每次更新时，它都是稳步向0前进。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-072e8d734157de67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>而看 L2 的话，就会发现它的梯度会越靠近0，就变得越小。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-ad5d05c63c4c4e49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>也就是说加了 L1 正则的话基本上经过一定步数后很可能变为0，而 L2 几乎不可能，因为在值小的时候其梯度也会变小。于是也就造成了 L1 输出稀疏的特性。</p>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ol>
+<li><a href="http://www.chioka.in/differences-between-l1-and-l2-as-loss-function-and-regularization/" target="_blank" rel="noopener">Differences between L1 and L2 as Loss Function and Regularization</a></li>
+<li><a href="https://stats.stackexchange.com/questions/45643/why-l1-norm-for-sparse-models" target="_blank" rel="noopener">Why L1 norm for sparse models</a></li>
+<li><a href="https://www.kaggle.com/residentmario/l1-norms-versus-l2-norms" target="_blank" rel="noopener">L1 Norms versus L2 Norms</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Norm_(mathematics" target="_blank" rel="noopener">Norm (mathematics)-Wiki</a>)</li>
+<li><a href="http://www.bradthiessen.com/html5/docs/ols.pdf" target="_blank" rel="noopener">Why we use “least squares” regression instead of “least absolute deviations” regression</a>    </li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/正则化/">正则化</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://andy-yangz.github.io/2019/03/09/理解L1，L2范数/" data-title="理解L1，L2范数在机器学习中的应用 | Andy" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2019/03/03/斯坦福深度自然语言处理笔记：初入词向量/"  title="斯坦福深度自然语言处理笔记：初入词向量">
+ <strong>下一篇：</strong><br/> 
+ <span>斯坦福深度自然语言处理笔记：初入词向量
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#理解L1，L2-范数"><span class="toc-number">1.</span> <span class="toc-text">理解L1，L2 范数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是范数？"><span class="toc-number">1.1.</span> <span class="toc-text">什么是范数？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#L1-和-L2-范数的定义"><span class="toc-number">1.2.</span> <span class="toc-text">L1 和 L2 范数的定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#我们可以担当损失函数"><span class="toc-number">1.3.</span> <span class="toc-text">我们可以担当损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#我们还能担当正则项"><span class="toc-number">1.4.</span> <span class="toc-text">我们还能担当正则项</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reference"><span class="toc-number">2.</span> <span class="toc-text">Reference</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/NLP/" title="NLP">NLP<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Natural-Language-Processing/" title="Natural Language Processing">Natural Language Processing<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Paper-Notes/" title="Paper Notes">Paper Notes<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/" title="机器学习">机器学习<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/语言学/" title="语言学">语言学<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/NMT/" title="NMT">NMT<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Linguistic-Structure/" title="Linguistic Structure">Linguistic Structure<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/NLP/" title="NLP">NLP<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/cs224n/" title="cs224n">cs224n<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/笔记/" title="笔记">笔记<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/恶搞/" title="恶搞">恶搞<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/LSTM/" title="LSTM">LSTM<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则化/" title="正则化">正则化<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://www.jianshu.com/u/2bce591750a0" target="_blank" title="简书(坂本龙一)">简书(坂本龙一)</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://upload-images.jianshu.io/upload_images/4787675-731072fb09d7426a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" target="_blank" title="公众号(安迪的写作间)">公众号(安迪的写作间)</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://medium.com/andy-yangz" target="_blank" title="Medium">Medium</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Andy Yang in JAIST. <br/>
+			This is my blog, no matter you believe it or not, anyway I don&#39;t believe it.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		<a href="https://github.com/https://github.com/andy-yangz" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2019 
+		
+		<a href="/about" target="_blank" title="Andy Yang">Andy Yang</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

@@ -82,6 +82,140 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/03/09/理解L1，L2范数/" title="理解L1，L2范数在机器学习中的应用" itemprop="url">理解L1，L2范数在机器学习中的应用</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2019-03-08T16:59:17.000Z" itemprop="datePublished"> Published 2019-03-09</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h3 id="理解L1，L2-范数"><a href="#理解L1，L2-范数" class="headerlink" title="理解L1，L2 范数"></a>理解L1，L2 范数</h3><p>L1，L2 范数即 <strong>L1-norm</strong> 和 <strong>L2-norm</strong>，自然，有L1、L2便也有L0、L3等等。因为在机器学习领域，L1 和 L2 范数应用比较多，比如作为正则项在回归中的使用 <em>Lasso Regression</em>(L1) 和 <em>Ridge Regression</em>(L2)。</p>
+<p>因此，此两者的辨析也总被提及，或是考到。不过在说明两者定义和区别前，先来谈谈什么是范数（Norm）吧。</p>
+<h4 id="什么是范数？"><a href="#什么是范数？" class="headerlink" title="什么是范数？"></a>什么是范数？</h4><p>在线性代数以及一些数学领域中，norm 的定义是</p>
+<blockquote>
+<p>a function that assigns a strictly positive length or size to each vector in a vector space， except for the zero vector. ——Wikipedia</p>
+</blockquote>
+<p>简单点说，一个向量的 norm 就是将该向量<strong>投影到 [0, ) 范围内的值</strong>，其中 0 值只有零向量的 norm 取到。看到这样的一个范围，相信大家就能想到其与现实中距离的类比，于是在机器学习中 norm 也就总被拿来<strong>表示距离关系</strong>：根据怎样怎样的范数，这两个向量有多远。</p>
+<p>上面这个怎样怎样也就是范数种类，通常我们称为p-norm，严格定义是：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-84f979137efb8356.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>其中当 p 取 1 时被称为 1-norm，也就是提到的 <strong>L1-norm</strong>，同理 <strong>L2-norm</strong> 可得。</p>
+<h4 id="L1-和-L2-范数的定义"><a href="#L1-和-L2-范数的定义" class="headerlink" title="L1 和 L2 范数的定义"></a>L1 和 L2 范数的定义</h4><p>根据上述公式 L1-norm 和 L2-norm 的定义也就自然而然得到了。</p>
+<p>先将 p=1 代入公式，就有了 L1-norm 的定义：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-bdfe4613e0b4eebd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>然后代入 p=2，L2-norm 也有了：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9b029dab47a11f05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>L2 展开就是熟悉的欧几里得范数：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-d785512015b3f21a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>题外话，其中 L1-norm 又叫做 taxicab-norm 或者 Manhattan-norm，可能最早提出的大神直接用在曼哈顿区坐出租车来做比喻吧。下图中绿线是两个黑点的 L2 距离，而其他几根就是 taxicab 也就是 L1 距离，确实很像我们平时用地图时走的路线了。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-a19e3c582d80511f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>L1 和 L2 范数在机器学习上最主要的应用大概分下面两类</p>
+<ul>
+<li>作为<strong>损失函数</strong>使用</li>
+<li>作为<strong>正则项</strong>使用也即所谓 <strong>L1-regularization</strong> 和 <strong>L2-regularization</strong></li>
+</ul>
+<h4 id="我们可以担当损失函数"><a href="#我们可以担当损失函数" class="headerlink" title="我们可以担当损失函数"></a>我们可以担当损失函数</h4><p>先来看个回归问题</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-554d883f54c7e06e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>我们需要做的是，获得一条线，让数据点到线上的总距离（也就是error）最小。</p>
+<p>还记得之前在范数介绍中提到的用来表示距离吗，于是也可以用能表示距离的 L1-norm 和 L2-norm 来作为损失函数了。</p>
+<p>首先是 L1-norm 损失函数，又被称为 <strong>least absolute deviation (LAD，最小绝对偏差)</strong></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-98061b1e68943fd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>如果我们最小化上面的损失函数，其实就是在最小化预测值  和目标值  的绝对值。</p>
+<p>之后是大家最熟悉的 L2-norm 损失函数，又有大名<strong>最小二乘误差 (least squares error, LSE)</strong>:</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9dbf61ed70a87c8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>这个便不多解释了。</p>
+<p>那么问题来了，这里不谈挖掘机，为什么大家一般都用 L2 损失函数，却不用 L1 呢？</p>
+<p>这个就说来话长了，如果你问一个学习过微积分的同学，如何求一个方程的最小值，他/她大概会想当然的说：“求导，置零，解方程。” 号称微积分届的农夫三拳。</p>
+<p>但如果给出一个绝对值的方程，突然就会发现农夫三拳不管用了，求最小值就有点麻烦了。主要是因为绝对值的倒数是不连续的。</p>
+<p>同样的对于 L1 和 L2 损失函数的选择，也会碰到同样的问题，所以最后大家一般用 L2 损失函数而不用 L1 损失函数的原因就是：</p>
+<p><strong>因为计算方便！</strong></p>
+<p>可以直接求导获得取最小值时各个参数的取值。</p>
+<p>此外还有一点，<strong>用 L2 一定只有一条最好的预测线，L1 则因为其性质可能存在多个最优解</strong>。（更多关于L1 L2 损失函数参考索引5）</p>
+<p>当然 L1 损失函数难道就没有什么好处了吗，也是有的，那就是<strong>鲁棒性 (Robust) 更强，对异常值更不敏感</strong>。</p>
+<h4 id="我们还能担当正则项"><a href="#我们还能担当正则项" class="headerlink" title="我们还能担当正则项"></a>我们还能担当正则项</h4><p>因为机器学习中众所周知的过拟合问题，所以用正则化防止过拟合，成了机器学习中一个非常重要的技巧。</p>
+<p>但数学上来讲，其实就是在损失函数中加个<strong>正则项（Regularization Term）</strong>，来防止参数拟合得过好。</p>
+<p>L1-regularization 和 L2-regularization 便都是我们常用的正则项，两者公式的例子分别如下</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-c0e119a8b70137bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-a0ccc40c71f79a68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>这两个正则项最主要的不同，包括两点：</p>
+<ul>
+<li>如上面提到的，<strong>L2 计算起来更方便</strong>，而 L1 在特别是非稀疏向量上的计算效率就很低；</li>
+<li>还有就是 L1 最重要的一个特点，<strong>输出稀疏</strong>，会把不重要的特征直接置零，而 L2 则不会；</li>
+<li>最后，如之前多次提过，L2 有唯一解，而 L1 不是。</li>
+</ul>
+<p>这里关于第二条输出稀疏我想再进行一些详细讲解，因为 L1 天然的输出稀疏性，把不重要的特征都置为 0，所以它也是<strong>一个天然的特征选择器</strong>。</p>
+<p>可是为什么 L1 会有这样的性质呢，而 L2 没有呢？这里用个直观的例子来讲解。</p>
+<p>来一步一步看吧，首先获知用梯度下降法来优化时，需要求导获得梯度，然后用以更新参数。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-81d41174acd51397.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>于是分别先对 L1 正则项和 L2 正则项来进行求导，可得。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-8f1588a5c965d070.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-9c651d589122fd97.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>之后将 L1 和 L2 和它们的导数画在图上</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-8fc97fc06595c3e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-4788167230fdfca4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>于是会发现，在梯度更新时，不管 L1 的大小是多少（只要不是0）梯度都是1或者-1，所以每次更新时，它都是稳步向0前进。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-072e8d734157de67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>而看 L2 的话，就会发现它的梯度会越靠近0，就变得越小。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-ad5d05c63c4c4e49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""> </p>
+<p>也就是说加了 L1 正则的话基本上经过一定步数后很可能变为0，而 L2 几乎不可能，因为在值小的时候其梯度也会变小。于是也就造成了 L1 输出稀疏的特性。</p>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ol>
+<li><a href="http://www.chioka.in/differences-between-l1-and-l2-as-loss-function-and-regularization/" target="_blank" rel="noopener">Differences between L1 and L2 as Loss Function and Regularization</a></li>
+<li><a href="https://stats.stackexchange.com/questions/45643/why-l1-norm-for-sparse-models" target="_blank" rel="noopener">Why L1 norm for sparse models</a></li>
+<li><a href="https://www.kaggle.com/residentmario/l1-norms-versus-l2-norms" target="_blank" rel="noopener">L1 Norms versus L2 Norms</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Norm_(mathematics" target="_blank" rel="noopener">Norm (mathematics)-Wiki</a>)</li>
+<li><a href="http://www.bradthiessen.com/html5/docs/ols.pdf" target="_blank" rel="noopener">Why we use “least squares” regression instead of “least absolute deviations” regression</a>    </li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/正则化/">正则化</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/03/03/斯坦福深度自然语言处理笔记：初入词向量/" title="斯坦福深度自然语言处理笔记：初入词向量" itemprop="url">斯坦福深度自然语言处理笔记：初入词向量</a>
   </h1>
   <p class="article-author">By
@@ -489,85 +623,6 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2017/11/07/11-7论文笔记Predicting-Target-Language-CCG-Supertags-Improves-Neural-Machine-Translation/" title="论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation" itemprop="url">论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
-		
-  <p class="article-time">
-    <time datetime="2017-11-07T14:14:14.000Z" itemprop="datePublished"> Published 2017-11-07</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h4 id="一、文章有什么贡献？"><a href="#一、文章有什么贡献？" class="headerlink" title="一、文章有什么贡献？"></a>一、文章有什么贡献？</h4><ol>
-<li>主要共享是提出了一个新的思路，以CCG (Combinatory Categorial Grammar) Supertag的形式将句法信息引入了，NMT（神经机器翻译）的解码器端，对NMT的性能有了一定提高。</li>
-<li>用两种方式将CCG Supertag任务引入解码器，一种是直接插入输出的序列，一种是利用了多任务学习，对多任务学习的研究也有一些贡献。</li>
-<li>展示了不光是解码器，当同时在编码器端输入语言学信息的时候，性能得到进一步提高。</li>
-<li>对其中更多细节，如句子种类还有句子长度也进行了详细的分析。进一步理解，引入语言学信息后对NMT系统的影响。</li>
-</ol>
-<h4 id="二、本文研究问题有什么价值？"><a href="#二、本文研究问题有什么价值？" class="headerlink" title="二、本文研究问题有什么价值？"></a>二、本文研究问题有什么价值？</h4><p>首先引入CCG Supertag来对NMT的解码器加入语法学信息，而且证明了这种情况下直接插入输出序列比多任务学习的性能要好。当然主要还是证明了，语言学对NMT系统的影响。</p>
-<h4 id="三、研究问题有什么挑战？"><a href="#三、研究问题有什么挑战？" class="headerlink" title="三、研究问题有什么挑战？"></a>三、研究问题有什么挑战？</h4><p>大概就是如何将CCG supertag的语法信息引入编码器端吧。</p>
-<p>之后很多都是对系统的详细分析了。</p>
-<h4 id="四、本文解决思路？"><a href="#四、本文解决思路？" class="headerlink" title="四、本文解决思路？"></a>四、本文解决思路？</h4><p>本文提出了两个解决思路。</p>
-<ol>
-<li><p>一个是interleaving，也就是将CCG supertag直接相间插入目标语言的序列中去，也就是将输出序列长度增加一倍，一个单词一个相应的tag。如这样 $y^{‘}=y_1^{tag},y_1^{word},…,y_T^{tag},y_T^{word}$ .</p>
-<p>然后就把这个当做是原来的目标语言序列，进行解码预测。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-9a98cd36e56004d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="interleaving"></p>
-</li>
-<li><p>还有一种思路是利用多任务学习(Multi-task Learning)，两个解码器分别用来翻译和输出CCG supertag，这两个解码器共享一个编码器。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-0f2176669ea14a6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="multitasking"></p>
-<p>结果是第一个方案更好一些。</p>
-</li>
-</ol>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Paper-Notes/">Paper Notes</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/NMT/">NMT</a><a href="/tags/Linguistic-Structure/">Linguistic Structure</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
       <a href="/2017/11/07/小黄人语从入门到进精神病院/" title="小黄人语从入门到进精神病院" itemprop="url">小黄人语从入门到进精神病院</a>
   </h1>
   <p class="article-author">By
@@ -669,6 +724,85 @@
   <div class="article-tags">
   
   <span></span> <a href="/tags/恶搞/">恶搞</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2017/11/07/11-7论文笔记Predicting-Target-Language-CCG-Supertags-Improves-Neural-Machine-Translation/" title="论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation" itemprop="url">论文笔记:Predicting Target Language CCG Supertags Improves Neural Machine Translation</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-07T14:14:14.000Z" itemprop="datePublished"> Published 2017-11-07</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h4 id="一、文章有什么贡献？"><a href="#一、文章有什么贡献？" class="headerlink" title="一、文章有什么贡献？"></a>一、文章有什么贡献？</h4><ol>
+<li>主要共享是提出了一个新的思路，以CCG (Combinatory Categorial Grammar) Supertag的形式将句法信息引入了，NMT（神经机器翻译）的解码器端，对NMT的性能有了一定提高。</li>
+<li>用两种方式将CCG Supertag任务引入解码器，一种是直接插入输出的序列，一种是利用了多任务学习，对多任务学习的研究也有一些贡献。</li>
+<li>展示了不光是解码器，当同时在编码器端输入语言学信息的时候，性能得到进一步提高。</li>
+<li>对其中更多细节，如句子种类还有句子长度也进行了详细的分析。进一步理解，引入语言学信息后对NMT系统的影响。</li>
+</ol>
+<h4 id="二、本文研究问题有什么价值？"><a href="#二、本文研究问题有什么价值？" class="headerlink" title="二、本文研究问题有什么价值？"></a>二、本文研究问题有什么价值？</h4><p>首先引入CCG Supertag来对NMT的解码器加入语法学信息，而且证明了这种情况下直接插入输出序列比多任务学习的性能要好。当然主要还是证明了，语言学对NMT系统的影响。</p>
+<h4 id="三、研究问题有什么挑战？"><a href="#三、研究问题有什么挑战？" class="headerlink" title="三、研究问题有什么挑战？"></a>三、研究问题有什么挑战？</h4><p>大概就是如何将CCG supertag的语法信息引入编码器端吧。</p>
+<p>之后很多都是对系统的详细分析了。</p>
+<h4 id="四、本文解决思路？"><a href="#四、本文解决思路？" class="headerlink" title="四、本文解决思路？"></a>四、本文解决思路？</h4><p>本文提出了两个解决思路。</p>
+<ol>
+<li><p>一个是interleaving，也就是将CCG supertag直接相间插入目标语言的序列中去，也就是将输出序列长度增加一倍，一个单词一个相应的tag。如这样 $y^{‘}=y_1^{tag},y_1^{word},…,y_T^{tag},y_T^{word}$ .</p>
+<p>然后就把这个当做是原来的目标语言序列，进行解码预测。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-9a98cd36e56004d6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="interleaving"></p>
+</li>
+<li><p>还有一种思路是利用多任务学习(Multi-task Learning)，两个解码器分别用来翻译和输出CCG supertag，这两个解码器共享一个编码器。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-0f2176669ea14a6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="multitasking"></p>
+<p>结果是第一个方案更好一些。</p>
+</li>
+</ol>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Paper-Notes/">Paper Notes</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NMT/">NMT</a><a href="/tags/Linguistic-Structure/">Linguistic Structure</a>
   </div>
 
 </div>
@@ -927,202 +1061,10 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2017/10/31/神经机器翻译概览：基准模型与改进（下）/" title="神经机器翻译概览：基准模型与改进（下）" itemprop="url">神经机器翻译概览：基准模型与改进（下）</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
-		
-  <p class="article-time">
-    <time datetime="2017-10-31T02:02:29.000Z" itemprop="datePublished"> Published 2017-10-31</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h2 id="神经机器翻译概览：基准模型与改进（下）"><a href="#神经机器翻译概览：基准模型与改进（下）" class="headerlink" title="神经机器翻译概览：基准模型与改进（下）"></a>神经机器翻译概览：基准模型与改进（下）</h2><blockquote>
-<p>光看下篇小心变成梅超风，上篇：</p>
-<p><a href="https://www.jianshu.com/p/546750a32c92" target="_blank" rel="noopener">神经机器翻译概览：基准模型与改进（上）</a></p>
-</blockquote>
-<p>之前在上篇主要提到了神经机器翻译的基准模型，序列到序列+注意力机制。</p>
-<p>还从多个方面谈到了怎么对基准模型进行改进，其中包括：</p>
-<ul>
-<li>利用多个模型的<strong>集成解码</strong></li>
-<li>怎么处理<strong>庞大的词汇量</strong></li>
-<li>如何使用<strong>单语言数据</strong></li>
-</ul>
-<p>上面这三个都没有触及到，对基准模型的修改，更多是集成和利用数据。</p>
-<p>在下篇中，我们开始讨论</p>
-<ul>
-<li>怎么利用<strong>深层模型</strong>，改进编码和解码器</li>
-<li>怎么利用<strong>引导对齐 (Alignment) </strong>训练，加强注意力机制</li>
-<li>怎么加入<strong>覆盖 (Coverage)</strong> 技巧，保证不过度翻译</li>
-</ul>
-<p>同时进一步讨论怎么利用数据，其中包括</p>
-<ul>
-<li>如何用<strong>域适应</strong> (Domain Adaption) 技巧，利用其它域的数据来帮助训练只有少量数据的任务</li>
-<li>如何利用除了词以外的<strong>语言学标记</strong>，来加强翻译</li>
-<li>如何处理<strong>多语言对</strong>的问题，甚至是利用多语言对实现零样本学习</li>
-</ul>
-<h3 id="深层模型"><a href="#深层模型" class="headerlink" title="深层模型"></a>深层模型</h3><p>对于神经网络模型，其中最值得探索的便是其中的深层模型，这也是深度学习在探索的。因为根据不同连接方式，就可以得到不同的模型架构，而这些不同架构分别在处理特定问题是会有很好的效果。</p>
-<p>比如计算机视觉的话，之前也提到过的<a href="https://www.jianshu.com/p/841ac51c7961" target="_blank" rel="noopener">CNN里面各种变种</a>，ResNet还有InceptNet这样的通过不同的连接技巧获得不同构架变种。</p>
-<h4 id="深层解码器"><a href="#深层解码器" class="headerlink" title="深层解码器"></a>深层解码器</h4><p>对于解码器端，主要是对循环神经网络（RNN）的两种链接方式的应用。</p>
-<p>第一种连接方式，<strong>堆叠（Stacked）RNN</strong>，也就是一般常见的连接方式。<strong>当前隐态是由同一个时序前一个层的隐态和前一个时序同一个层的隐态决定的</strong>。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-2253286ca6904fee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="两种连接"></p>
-<p>第二种连接，<strong>深层过渡（Transition）RNN</strong>，这种是<strong>当前时序的第一层隐态由前一个时序的最后一层隐态决定，而其他的隐态则只由前一层的隐态决定</strong>。</p>
-<p>在现实应用中可以把两个技巧结合起来使用，至于到底怎么组合更好，现在还没有定论，还有待探索。实际上很多模型中就只用了堆叠模型，如果要用上两个的话，这里可以给出一个例子。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-e4eba49c74c019e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>这个模型里面，有些层用堆叠RNN里的处理方法，而有的层则是用过渡RNN的处理方法。</p>
-<h4 id="深层编码器"><a href="#深层编码器" class="headerlink" title="深层编码器"></a>深层编码器</h4><p>编码器跟解码器一样，也可以利用上述的不同连接技巧。</p>
-<p>比起解码器，因为编码器更容易利用句子的双向信息，所以更重要的是，应该试着应用不同的连接技巧，获得更多的双向信息。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-8babc056e64cc952.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Alternating RNN"></p>
-<p>这里举一个例子，一个叫做<strong>交替 (Alternating) RNN**</strong>的**模型，从第一层开始往上，首先是从左到右，之后从右到左，之后再从左到右… 这样子的交替运行。</p>
-<p>除了上面说的这些，对于深层的编码解码器，当然也可以用上一般深层模型中的一些技巧，比如说残差连接。</p>
-<h3 id="引导对齐-Guided-Alignment-训练"><a href="#引导对齐-Guided-Alignment-训练" class="headerlink" title="引导对齐 (Guided Alignment) 训练"></a>引导对齐 (Guided Alignment) 训练</h3><p>首先如之前基准模型时介绍的，模型中注意力机制的主要作用，是决定源语言句子和目标语言句子之间词对应关系。比如说通过注意力机制，模型知道德语里面的词Bücherregal，对应英语里的book shelf。</p>
-<p>而这样的对应关系是通过在大量数据上训练，模型自己学会的，但实际情况中，有时注意力机制可能学习的<strong>并不是对齐方式</strong>，而是其他东西。比如说下图就是对齐和注意力机制的对比。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-20b3f0e49c7d824f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>图中蓝色的框是标准的对齐方法，而绿色部分则是注意力机制学习的对齐，我们会发现在有些地方两者很不一致。所以这也表示可能在这里注意力机制学习的就不是词对齐，那能不能让注意力机制学习标准的对齐方式呢？</p>
-<p>当然可以。就像翻译时有标准的翻译数据一样，对齐的话，如果事先有标准的对齐数据，就<strong>能用标准对齐方式来作为目标训练注意力机制</strong>，使得它输出的结果和标准对齐方式一样。</p>
-<h3 id="模型的覆盖-Coverage"><a href="#模型的覆盖-Coverage" class="headerlink" title="模型的覆盖(Coverage)"></a>模型的覆盖(Coverage)</h3><p>现在的神经网络翻译模型还有一个很大的问题，过度翻译 (Over-translation)和翻译不足 (Under-translation) 。</p>
-<p>有时候注意力机制<strong>把注意力都只放在某些重要词上</strong>，所以会出现翻译时对重要的词进行重复翻译，也就是突然结巴了；也会对有些本因翻译的词视而不见。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-bde27df49b4e48a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Social Housing 过度注意，导致翻译不足"></p>
-<p>而解决这个问题的方法就如标题，要保重翻译时对输入的所有词有一个全面的覆盖，使得所有词得到适当的翻译。</p>
-<h4 id="在翻译阶段设置约束保证强制覆盖"><a href="#在翻译阶段设置约束保证强制覆盖" class="headerlink" title="在翻译阶段设置约束保证强制覆盖"></a>在翻译阶段设置约束保证强制覆盖</h4><p>第一个方法，我们可以设计一个评价函数。当束搜索（Beam Search）给出几个备选翻译时，根据每个备选翻译的覆盖程度给出一定的评分。</p>
-<p>实际上也就是<strong>人为地设计一个对更标准翻译评估的函数，来引导解码器的翻译有更好的覆盖</strong>。</p>
-<h4 id="覆盖模型"><a href="#覆盖模型" class="headerlink" title="覆盖模型"></a>覆盖模型</h4><p>还有一种方法，叫做覆盖（Coverage）模型。</p>
-<p>首先之所以模型不能完成全面的覆盖，第一，最初输入的信息在经过几个时序传输后，信息并不能被有效保存下来；第二，每次翻译利用注意力机制来查看源语言时，都只与当前的翻译中的注意力有关，但却不知道之前的翻译词用到过的注意力，也就是说<strong>即使之前的翻译已经将注意力放在一个词上并给出了翻译，当前词也不知道</strong>。</p>
-<p>那么解决方案也很直观，那就是让当前翻译知道之前用到过的注意力。</p>
-<p>比如说可以把每个时序获得的注意力向量作为输入，输进RNN网络。而在每一个时序上，输入是对之前注意力的总结，还有当前时序用正常方法获得的注意力，之后输出要用到的注意力向量。</p>
-<p>于是当前用到的注意力向量就是来自于历史注意力和当前注意力，可以避免过度翻译。</p>
-<h4 id="Fertility-可繁殖性"><a href="#Fertility-可繁殖性" class="headerlink" title="Fertility (可繁殖性)"></a>Fertility (可繁殖性)</h4><p>对于覆盖模型还可以利用fertility来进行辅助，fertility指的就是<strong>一个源语言词可以翻译成目标语言词的个数</strong>，比如说德语的natuerlich译成英文就是两个词in fact，那么natuerlich的fertility就是2。</p>
-<p>通过预测fertility就可以比较方便地知道当前词应该翻译成多少个词，如果达到了，那就把注意力集中在其他词。</p>
-<p>Fertility也有很多其他应用，比如说<a href="https://einstein.ai/research/non-autoregressive-neural-machine-translation" target="_blank" rel="noopener">最近Salesforce利用fertility实现了完全并行翻译</a>，而不是像RNN解码器一样得一个个解码。</p>
-<p>但实际上我认为fertility有很多局限性，比如说实际翻译中有很多种译法，那么这些对于的fertility就都不一样，也就是说某个词的fertility不唯一。</p>
-<h3 id="域适应-Domain-Adaption"><a href="#域适应-Domain-Adaption" class="headerlink" title="域适应 (Domain Adaption)"></a>域适应 (Domain Adaption)</h3><p>和很多其他领域一样，在机器翻译领域里域适应问题也是个大问题。</p>
-<p>首先什么是域（Domain）? 比较直观的解释是，<strong>某个类型的数据</strong>。比如说，情感分析里亚马逊的商品评论数据就根据商品种类分为：家电、书籍、衣物等多个种类，那么我们可以把这些当成不同的域。</p>
-<p>机器翻译中和域相关的问题是，大部分并行数据 (Parallel Data) 都来自于国际性的官方文档 (Europarl)，或者是字幕 (<a href="https://wit3.fbk.eu/" target="_blank" rel="noopener">WIT3</a>)。</p>
-<p>而像是那种日常聊天的并行数据却很少，因此如果用提说到的数据训练机器翻译系统，然后用它来翻译聊天的语言的话，那么效果会大打折扣。这是因为<strong>域的不吻合 (Domain Mismatch)</strong> 导致的，为了解决这个问题，就需要域适应技巧了。</p>
-<p>通常的域适应问题是这样的，假设有一组和目标任务相关的数据，这个叫做<strong>域内数据 (in-domain data)</strong>，同时也有一组和目标任务不是那么相关的数据，这个叫它<strong>域外数据 (out-of-domain data)</strong>。通常，域内数据太少了，而域外数据比较充足。</p>
-<p>当然，域内域外的说法并不是绝对的，而是根据当前目标任务而决定的。</p>
-<p>首先来说说两个通常的方案吧。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-9a8d92d1869a379f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>第一，<strong>迁移学习</strong>。就跟在预训练好的ImageNet分类器上用很少数据训练高性能分类器一样，首先先在大量的一般数据上训练出一个神经机器翻译系统，然后再用少量的域内数据进行继续训练。</p>
-<p>这种情况下，模型就不光能从大量的一般数据中获得知识，之后也会集中在域内数据的知识上。事实上，这个方案在用域内数据训练阶段，收敛会很快，可以得到不错的域内模型。</p>
-<p>第二个，<strong>多域集成学习</strong>，比起第一个用到的就不是那么多了。上篇里也讲过集成学习，这里也就是在不同的域里面训练出多个模型，之后用这多个模型进行集成解码。如果想要再进行微调，可以给予每个模型一定的权重。</p>
-<p>之后来看看，在实际应用中会碰到的特殊情况吧。</p>
-<h4 id="从大量数据中采样域内数据"><a href="#从大量数据中采样域内数据" class="headerlink" title="从大量数据中采样域内数据"></a>从大量数据中采样域内数据</h4><p>在实际应用中有时会出现的情况是，<strong>域内数据太少</strong>。即使利用上面提到的第一种迁移学习的方法，也会因为数据过少的原因而过拟合 (overfitting)。</p>
-<p>为了避免过拟合，只能人为的来增加更多的域内数据了。其中一个方法是，<strong>从一个有着大量一般数据的数据集中挑出与域内数据最接近的数据</strong>。</p>
-<p>具体方法也并不是太难，只要先分别训练出域内域外的源和目标语言的4个语言模型，这里需要用到四个单语言数据。</p>
-<p>之后对大量并行数据里面的每对数据进行相关性评分，与域内数据相像的得到比较高的评分，之后把评分高的挑出来就好了。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-eb65626ba90aed23.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>最后把采样出来的数据和已有数据合并，就可以用来训练目标模型了。</p>
-<h4 id="只有域内单语言数据"><a href="#只有域内单语言数据" class="headerlink" title="只有域内单语言数据"></a>只有域内单语言数据</h4><p>实际应用中还有一种情况是，根本就没有域内的并行数据，但是有单语言数据。</p>
-<p>第一个解决方案，就像上面提到的一样，先用单语言数据训练语言模型，之后对大量数据进行采样获得域内数据。</p>
-<p>第二个方案则是，<strong>合成数据</strong>。首先利用域外数据训练出一个模型，然后用这个模型来回译已有域内单语言数据，之后利用这些数据来进行迁移学习的第二阶段的训练。</p>
-<h4 id="多领域模型"><a href="#多领域模型" class="headerlink" title="多领域模型"></a>多领域模型</h4><p>最后一种情况，已经有一些分类分得很清的数据了，可以清晰地知道它们属于不同的域。</p>
-<p>这种情况，可以首先在各个域训练出翻译模型，然后再训练出一个文本分类器。</p>
-<p>之后，进行翻译时，<strong>先对当前文本进行文本分类</strong>，搞清楚它到底是属于哪个域。之后，挑选<strong>其所属域的翻译模型，对其进行翻译</strong>。这样子也就不用麻烦地进行域适应了。</p>
-<h3 id="利用语言学标记"><a href="#利用语言学标记" class="headerlink" title="利用语言学标记"></a>利用语言学标记</h3><p>以上谈到的各种技巧，都是从词语层面上进行翻译的。但实际上，在语言学中每个词除了本身作为一个词，还会有着各种语言学的标记。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-866f5705d2cfe349.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>一般会用到的标记，从底层到上层，常用到的分别有形态学(Morphology)标记、词性(POS, part of speech)标记、依存(Dependency)和成分(Constituent)标记、语义(Semantic)标记…</p>
-<p>在机器翻译中对这些语言学知识的利用，主要可以分为三个方面。</p>
-<ol>
-<li>利用输入句子的语言学标记</li>
-<li>利用输出句子的语言学标记</li>
-<li>建立利用了语言学结构的模型</li>
-</ol>
-<h4 id="输入端的语言学标记"><a href="#输入端的语言学标记" class="headerlink" title="输入端的语言学标记"></a>输入端的语言学标记</h4><p>首先对于输入端，比较容易想到的一种利用方法，是除了给词建立一个词向量表外，同时<strong>也给语言学标记分别建立向量表</strong>。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-f96623de57ab4d4e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="the girl watched attentively the beautiful fireflies 的各种语言学标记"></p>
-<p>之后训练时，每次输入一个词还有其对应的语言学标记，就分别进行查表，之后把这些特征向量拼接起来，作为一个词的向量输入编码器。</p>
-<p>这个技巧因为简单的原因，所以在很多已有神经机器翻译工具包里都得到了实现。</p>
-<h4 id="输出端的语言学标记"><a href="#输出端的语言学标记" class="headerlink" title="输出端的语言学标记"></a>输出端的语言学标记</h4><p>输出端这边，首先也可以像输入端一样，建立语言学标记的向量表，然后查表，拼接起来。但是，对于输出端我们还能够进行些更复杂的改变，比如说<strong>同时进行语言学结构和目标词的输出</strong>，这样可以利用语言学的结构引导输出句子的句法正确性。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-335697e0b9ec3c27.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="线性化句法树"></p>
-<p>这里举一个最简单的例子，就是<strong>将目标句子的句法树 (Syntax tree) 线性化，从树结构变成线性结构，然后中间同时插入预测词。训练的时候，预测的不再单单是目标句子了，而是这个线性化了的句法树</strong>。</p>
-<p>除了这样子的简单线性化以外，还有一些其他论文，同时进行句法结构预测和句子的预测进行多任务学习，也取得了比较好的效果。</p>
-<h4 id="语言结构化的模型"><a href="#语言结构化的模型" class="headerlink" title="语言结构化的模型"></a>语言结构化的模型</h4><p>上面提到的所有情况，都还是序列到序列的翻译。因为在上面的这种翻译方法看来，语言不过就是一串字符排成的序列，输入一段序列，然后得到另一段序列**。</p>
-<p>但是实际上我们是知道的，语言并不仅仅只是序列，而是递归的，像树状一样层层展开。</p>
-<p>所以现在神经机器翻译里一个很火的研究方向就是，如何<strong>从语言结构到语言结构，然后进行翻译</strong>。目前还没有能够做到树到树结构的翻译，但是在源或目标语言一端利用树状结构，已经有一些成果了。</p>
-<h3 id="多语言对"><a href="#多语言对" class="headerlink" title="多语言对"></a>多语言对</h3><p>最后，在把基本模型几乎方方面面提高进行了讨论之后，再来看看多语言对。因为世界上并不是只有两种语言，而是很多种语言，有些语言对有足够数据，但也有很多语言对并没有足够数据。</p>
-<p>但是看现在Google的翻译系统，不是可以对应很多很多语言吗？</p>
-<p>这是因为谷歌的神经网络翻译系统在一定程度上实现了，<strong>零样本学习 (Zero-shot Learning)</strong>，当然也同时用了很多其他技巧。</p>
-<blockquote>
-<p>所谓零样本学习，就是指对于某个任务，没有这个任务的训练数据，但是仍然可以训练出相应的模型。在现实生活中，人类有时就会大量使用零样本学习。</p>
-<p>Quora链接：<a href="https://www.quora.com/What-is-zero-shot-learning" target="_blank" rel="noopener">https://www.quora.com/What-is-zero-shot-learning</a></p>
-</blockquote>
-<h4 id="多输入语言"><a href="#多输入语言" class="headerlink" title="多输入语言"></a>多输入语言</h4><p>首先如果有多个输入语言，而只有一个输出语言，怎么进行训练呢？</p>
-<p>方法很想当然，直接把这些数据放在一起训练，输入端不同语言共享一个词汇表。每次输入句子的时候<strong>快速识别出输入句子所属语言，然后调用相应的词向量</strong>。</p>
-<h4 id="多输出语言"><a href="#多输出语言" class="headerlink" title="多输出语言"></a>多输出语言</h4><p>对于多个输出语言，也可以用同样的技巧，把数据放在一起进行训练，多个语言共享词汇表，</p>
-<p>但是模型怎么知道想翻译成什么语言呢，输入端还能够自动检测，但是输出端就不行呢，那就直接由我们告诉它好了。于是可以<strong>在输入句子前加上一个标签，来告诉系统想把当前句子翻译成什么语言</strong>。谷歌翻译系统中，这个在最开始我们选择相应语言的时候就会告诉系统。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-1790eac59459f18d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>虽然这个方法看起来很天然，但是却非常有效。而且更出乎人意料的是，用这个方法可以实现零样本学习。</p>
-<p>比如说现在有<strong>德语-英语</strong>、<strong>法语-英语</strong>、还有<strong>法语-西班牙语</strong>三个语言对的数据。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-663b111296be1767.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>利用上述方法，把这些数据放在一起训练一个模型。之后翻译的时候，先给源语言句子加上一个目标语言的标签，然后输入系统就可以得到结果。</p>
-<p>这里神奇的事情是，如果把一句德语句子作为输入，然后在它前面加上目标语言是西班牙语的标签。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-f7093df6e016561d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>一般来说，因为训练的时候根本就没有德语-西班牙语数据，那么也就不会成功。但结果是，居然翻译成功了！</p>
-<p>也就是说在<strong>根本没有某个语言对训练的情况下，而模型进行了该语言对的翻译</strong>，也就是零样本学习。而且结果显示翻译效果还挺好的。</p>
-<p>对于人类这样的零样本学习显得稀疏平常，近似本能。你既然会德语-英语之间翻译，也会英语-西班牙语翻译，那会德语-西班牙语翻译不就很正常吗。</p>
-<p>但是对于以往的机器翻译系统，往往是你给它什么训练语言对，它也就只会这个语言对的翻译。</p>
-<p>而这个系统的成功就意味着，对于所有不同语言，这里可能确实存在着一个中间语言 (Interlingua)，或者说是中间表达。模型首先把输入语言转换成中间表达，然后翻译目标语言，这样子就能很自然地实现零样本学习。</p>
-<h4 id="分享部件"><a href="#分享部件" class="headerlink" title="分享部件"></a>分享部件</h4><p>当然，上述的模型过于简单粗暴，就是把什么都丢进一个万能模型，然后让它自己训练。</p>
-<p>所以如果想要更加仔细地考虑怎么处理输入输出语言，我们可以试着为每个语言对训练一个模型，但是分享中间不同的部件。所以具体方案就如下。</p>
-<ol>
-<li>对于有相同输入语言的模型，分享编码器。</li>
-<li>对于有相同输出语言的模型，分享解码器。</li>
-<li>而注意力机制则是所有模型进行共享。</li>
-</ol>
-<p>以上就是目前大部分对基准模型进行提升的技巧了，实际上最新的各种技巧也不断在出现，这里肯定有很多没有覆盖到的。但里提到的是已经被证实比较有效，而且大部分已经能实际应用的方法。</p>
-<h2 id="替代模型"><a href="#替代模型" class="headerlink" title="替代模型"></a>替代模型</h2><h3 id="卷积模型"><a href="#卷积模型" class="headerlink" title="卷积模型"></a>卷积模型</h3><h3 id="卷积-注意力"><a href="#卷积-注意力" class="headerlink" title="卷积+注意力"></a>卷积+注意力</h3><h3 id="自注意力机制"><a href="#自注意力机制" class="headerlink" title="自注意力机制"></a>自注意力机制</h3><h2 id="当前的挑战（NMT和PSMT的比较）"><a href="#当前的挑战（NMT和PSMT的比较）" class="headerlink" title="当前的挑战（NMT和PSMT的比较）"></a>当前的挑战（NMT和PSMT的比较）</h2><h3 id="域误配问题"><a href="#域误配问题" class="headerlink" title="域误配问题"></a>域误配问题</h3><p>NMT更加不能适应域变换。</p>
-<h3 id="训练数据量问题"><a href="#训练数据量问题" class="headerlink" title="训练数据量问题"></a>训练数据量问题</h3><p>有足够多的数据的话，NMT可以达到很好的结果。</p>
-<h3 id="噪声问题"><a href="#噪声问题" class="headerlink" title="噪声问题"></a>噪声问题</h3><p>NMT更加不能抵抗数据中的噪音。</p>
-<h3 id="词匹配问题"><a href="#词匹配问题" class="headerlink" title="词匹配问题"></a>词匹配问题</h3><h3 id="束搜索-Beam-Search"><a href="#束搜索-Beam-Search" class="headerlink" title="束搜索(Beam Search)"></a>束搜索(Beam Search)</h3><p>Fast Alignment</p>
 
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Natural-Language-Processing/">Natural Language Processing</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/NLP/">NLP</a><a href="/tags/机器翻译/">机器翻译</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
+  <nav id="page-nav" class="clearfix">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
+  </nav>
 
 </div>
       <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
@@ -1146,6 +1088,10 @@
 		
 		  
 			<li><a href="/categories/Paper-Notes/" title="Paper Notes">Paper Notes<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/机器学习/" title="机器学习">机器学习<sup>1</sup></a></li>
 		  
 		
 		  
@@ -1186,15 +1132,19 @@
 			
 		
 			
-				<li><a href="/tags/恶搞/" title="恶搞">恶搞<sup>1</sup></a></li>
-			
-		
-			
 				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
 			
 		
 			
+				<li><a href="/tags/恶搞/" title="恶搞">恶搞<sup>1</sup></a></li>
+			
+		
+			
 				<li><a href="/tags/LSTM/" title="LSTM">LSTM<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/正则化/" title="正则化">正则化<sup>1</sup></a></li>
 			
 		
 		</ul>
