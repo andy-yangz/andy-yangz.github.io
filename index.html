@@ -82,6 +82,109 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2019/03/10/斯坦福深度自然语言处理笔记：深入词向量训练/" title="斯坦福深度自然语言处理笔记：深入词向量训练" itemprop="url">斯坦福深度自然语言处理笔记：深入词向量训练</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2019-03-10T15:47:07.000Z" itemprop="datePublished"> Published 2019-03-10</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <p>上次有讲到词向量背后的思想，还有提到<strong>用中心词预测周围词</strong>的方法来获得好的词向量。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-8ec2cca7638b6193.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>最后有说 Word2vec 学习的几个步骤：</p>
+<ul>
+<li>用中心词 c 和周围词 o 的向量，计算在o上下文的情况下有多大概率出现 c；</li>
+<li>通过最大化以上概率，不断调整词向量。</li>
+</ul>
+<p>关于<strong>调整词向量</strong>，最直接方法就是人为一个个看中心词和周围词上下文，然后基于向量计算知识手动调整。当然用屁股想想都知道这样不可能的，太麻烦了，那么大的词表！（其实过去那些编字典词典的就在做类似工作，无外乎一本词典可能就得编一辈子，安利电影《编舟记》。）</p>
+<p>不能自己看，那总得从某地方得到如何调整的信息吧。于是就需要<strong>目标函数来反馈训练的信息</strong>了。</p>
+<h2 id="我们的目标是什么：最小化目标函数！"><a href="#我们的目标是什么：最小化目标函数！" class="headerlink" title="我们的目标是什么：最小化目标函数！"></a>我们的目标是什么：最小化目标函数！</h2><p>我们想要：<strong>通过数据，学习到中心词与正确上下文的关系</strong>，抽象点就是获得参数，来最大化正确上下文出现在某词周围的概率。</p>
+<p>详细点解释，通过一套参数我们能确定其他词作为当前词上下文出现的概率，最初模型没学习时，模型可能会认为每个词作为上下文出现的概率都一样。而我们需要做的是“实事求是”，最大化现实场景中的上下文出现词的概率。</p>
+<p>比如有个词“son”，开始模型没有看过任何数据学习，可能就对“beach”作为上下文，或“bitch”作为上下文出现，哪个概率大，没太多概念。但当看过数据，经过学习，就会知道后者概率大，而且也最符合实际。</p>
+<p>于是似然函数（likelihood function）就是，在数据中，中心词对周围词的概率乘积：</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1g0y1sx12etj30y8084ju6.jpg" alt=""></p>
+<p>我们希望参数 $\theta$ 能够<strong>最大化</strong>这个概率，使其符合现实数据。为了便于计算和最优化，于是对它加上对数 log，还有负号，就得到了目标函数 $J(\theta)$ ：</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1g0y1ys3rhmj317e0bkn4g.jpg" alt=""></p>
+<p>然后问题就变成了最小化这个目标函数，也就是总说的最小化损失函数。回顾下就是，<strong>最小化目标函数 -&gt; 最大化似然函数 -&gt; 最大化预测准确</strong>。</p>
+<h2 id="啥是-P-w-t-j-w-t-theta"><a href="#啥是-P-w-t-j-w-t-theta" class="headerlink" title="啥是 P($w_{t+j}|w_t;\theta$)"></a>啥是 P($w_{t+j}|w_t;\theta$)</h2><p>好了，大的框架有了。再看看公式里，发现就只剩下一块硬骨头：</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1g0y4nnyougj30ak03074n.jpg" alt="image-20190310222530894"></p>
+<p>表面意思是，参数参数 $\theta$ 的情况下，$w_t$ 预测 $w_{t+j}$ 的概率，$t$ 就是当前词，加个 $j$ 当然就是想表示周围的词，所以$j$ 一般也不会太大。</p>
+<p>但问题是，这个方程其实只是表示一个概念，具体怎么计算呢。</p>
+<p>按照课程里，可以这样：</p>
+<ul>
+<li>每个词 w 我们用两个向量 $v$，$u$</li>
+<li>$v$ 是作为中心词的时候</li>
+<li>$u$ 是作为上下文的时候</li>
+</ul>
+<p>词 o 出现在中心词 c 上下文的概率就这样计算：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-58cb41f32f063465.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>这里直接<strong>用最简单的点乘</strong>，<strong>然后加上个 softmax</strong> 来计算。</p>
+<p>点乘是比较两个向量的相似性，乘积越大则可能越大；下面是 softmax 的正则化，使得出结果以概率表示（0到1的数）。</p>
+<p>题外话，softmax 是相对一般的 hardmax 来说的，也就是一般的 max，取最大值。而 soft 字面意思就是没那么硬，虽然给大的更大的概率，但是小的也会分配些概率，更平滑。</p>
+<h3 id="为什么用俩矩阵"><a href="#为什么用俩矩阵" class="headerlink" title="为什么用俩矩阵"></a>为什么用俩矩阵</h3><p>看过 word2vec 论文的童鞋，可能觉得为啥要俩向量矩阵啊。明明都一个词表，还特意分为中心词时的词向量表，和周围词的词向量表。</p>
+<p>官方给出的解释是，<strong>优化起来简单</strong>。我猜可能是因为作业里代码都是直接 numpy 实现，也没有到什么框架。所以没麻烦地弄计算图什么的，如果一个矩阵，优化时梯度加和比较麻烦。</p>
+<p>那么优化完后，我们用哪个矩阵作为词向量呢？课上说的是把两个平均一下来使用。</p>
+<p>其实我感觉平均或用哪个效果可能不会差太多，因为在之后手动计算梯度的时候就会发现，一起出现的词向量会把对方往自己拉。</p>
+<h2 id="最后一步：最优化"><a href="#最后一步：最优化" class="headerlink" title="最后一步：最优化"></a>最后一步：最优化</h2><p>要最小化上面说的目标函数，就要用到我们的好伙伴最优化理论里的 GD（<del>graduate</del> gradient descent），<strong>梯度下降法</strong>（还有一个很）。</p>
+<p>经典的优化算法分两大类，直接法和迭代法，而 GD 属于迭代法，大概思路是每次找到更新的方向然后对参数进行更新，让每次的目标函数更小，直到最后到达最小值。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-1298f49ff513c447.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>而这里的我们需要的方向就是目标函数的梯度，下面最右边那家伙：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-753404dd17f8d2a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>这里有个练习，<strong>对目标函数分别求中心词向量 $v$ 和周围词向量$u$ 的导</strong>:</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4787675-58cb41f32f063465.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>课程里有推导一个，可以参考自己推导，化简之后会得到很有意思的结论，发现之前想得复杂更新词向量原来干的是这玩意儿。</p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/NLP/">NLP</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/cs224n/">cs224n</a><a href="/tags/词向量/">词向量</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2019/03/09/理解L1，L2范数/" title="理解L1，L2范数在机器学习中的应用" itemprop="url">理解L1，L2范数在机器学习中的应用</a>
   </h1>
   <p class="article-author">By
@@ -984,83 +1087,6 @@
 
 
 
-   
-    
-    <article class="post-expand post" itemprop="articleBody"> 
-        <header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2017/11/06/论文笔记：Improved-Neural-Machine-Translation-with-a-Syntax-Aware-Encoder-and-Decoder/" title="论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder" itemprop="url">论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
-		
-  <p class="article-time">
-    <time datetime="2017-11-06T09:55:44.000Z" itemprop="datePublished"> Published 2017-11-06</time>
-    
-  </p>
-</header>
-    <div class="article-content">
-        
-        <h4 id="1-文章有何贡献？"><a href="#1-文章有何贡献？" class="headerlink" title="1.文章有何贡献？"></a>1.文章有何贡献？</h4><p>一、提出了bidirectional tree encoder，可以同时学会译出语言的序列表达和树状表达特征。之后，解码器利用这些信息进行解码。</p>
-<p>二、提出了tree-coverage model, 使得注意力机制更有效地利用了译出语言的句法结构。</p>
-<h4 id="2-本文研究的问题有何价值？"><a href="#2-本文研究的问题有何价值？" class="headerlink" title="2.本文研究的问题有何价值？"></a>2.本文研究的问题有何价值？</h4><p>一，在encoder端，对<em>Eriguchi et al. (2016)</em>的树状解码器进行了强化，改成了双方向的，不仅有bottom-up encoder，还有up-down encoder。与基线NMT模型相比，性能有了很大的提升。</p>
-<p>二、在decoder端，利用<em>Tu et al. (2016)</em>的coverage模型，将译出端的句法结构整合进注意力机制中去。这种处理，使得性能得到更大的提升。</p>
-<h4 id="3-研究问题有什么挑战？"><a href="#3-研究问题有什么挑战？" class="headerlink" title="3.研究问题有什么挑战？"></a>3.研究问题有什么挑战？</h4><p>一、如何充分编码译出端的句法信息？较之之前已有的树状编码器(tree encoder).</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-ac021456b88eaeed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Tree Encoder"></p>
-<p>二、直接将树状编码器的各个节点，输入注意力机制后，发现会过度地集中于父节点，而忽略了子节点。导致的结果是，对某些部分的句子进行了重复翻译。如何解决这个问题。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-165ce74906fae653.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Over attention to parent nodes"></p>
-<h4 id="4-本文的解决思路？"><a href="#4-本文的解决思路？" class="headerlink" title="4.本文的解决思路？"></a>4.本文的解决思路？</h4><p>对于第一个问题，提出<strong>bidirectional tree encoder</strong>。</p>
-<p>当下面的叶节点按照序列顺序进行完了双向LSTM后，拼接特征，输入上一级的父节点，然后以此类推，到达最后的根节点。这是，原来的树状编码器的思路，也就是bottom-up。这样我们每个节点，获得了一个向上的特征向量。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-76377f6fdc6bdb0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Bi-directional Tree Encoder"></p>
-<p>而本文更进一步，将bottom-up的结果输入根节点，然后再从上到下，到达各个子节点。这也就是top-down。这样每个节点又获得了一个向下的特征向量。</p>
-<p>之后将向上和向下的拼接，就是我们需要的双向特征了。</p>
-<p>对于第二个问题，提出了<strong>tree-coverage model</strong>。</p>
-<p>其实所谓的coverage就是，在计算当前时序的attention时，考虑之前时序的attention。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4787675-1ed9e9f543969536.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Attention balanced"></p>
-<p>具体细节公式参考论文。 </p>
-<p><a href="https://arxiv.org/pdf/1707.05436.pdf" target="_blank" rel="noopener">Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</a></p>
-
-        
-        
-        <p class="article-more-link">
-          
-       </p>
-    </div>
-    <footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Paper-Notes/">Paper Notes</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/NMT/">NMT</a><a href="/tags/Linguistic-Structure/">Linguistic Structure</a>
-  </div>
-
-</div>
-
-
-
-
-<div class="comments-count">
-	
-</div>
-
-</footer>
-
-
-    </article>
-
-
-
-
-
-
 
   <nav id="page-nav" class="clearfix">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next<span></span></a>
@@ -1079,7 +1105,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/NLP/" title="NLP">NLP<sup>1</sup></a></li>
+			<li><a href="/categories/NLP/" title="NLP">NLP<sup>2</sup></a></li>
 		  
 		
 		  
@@ -1120,11 +1146,11 @@
 			
 		
 			
-				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
+				<li><a href="/tags/cs224n/" title="cs224n">cs224n<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/cs224n/" title="cs224n">cs224n<sup>1</sup></a></li>
+				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
 			
 		
 			
@@ -1132,7 +1158,7 @@
 			
 		
 			
-				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
+				<li><a href="/tags/词向量/" title="词向量">词向量<sup>1</sup></a></li>
 			
 		
 			
@@ -1141,6 +1167,10 @@
 		
 			
 				<li><a href="/tags/LSTM/" title="LSTM">LSTM<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
 			
 		
 			

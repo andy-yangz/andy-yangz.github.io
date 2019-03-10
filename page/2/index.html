@@ -82,6 +82,83 @@
         <header class="article-info clearfix">
   <h1 itemprop="name">
     
+      <a href="/2017/11/06/论文笔记：Improved-Neural-Machine-Translation-with-a-Syntax-Aware-Encoder-and-Decoder/" title="论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder" itemprop="url">论文笔记：Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Andy Yang" target="_blank" itemprop="author">Andy Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2017-11-06T09:55:44.000Z" itemprop="datePublished"> Published 2017-11-06</time>
+    
+  </p>
+</header>
+    <div class="article-content">
+        
+        <h4 id="1-文章有何贡献？"><a href="#1-文章有何贡献？" class="headerlink" title="1.文章有何贡献？"></a>1.文章有何贡献？</h4><p>一、提出了bidirectional tree encoder，可以同时学会译出语言的序列表达和树状表达特征。之后，解码器利用这些信息进行解码。</p>
+<p>二、提出了tree-coverage model, 使得注意力机制更有效地利用了译出语言的句法结构。</p>
+<h4 id="2-本文研究的问题有何价值？"><a href="#2-本文研究的问题有何价值？" class="headerlink" title="2.本文研究的问题有何价值？"></a>2.本文研究的问题有何价值？</h4><p>一，在encoder端，对<em>Eriguchi et al. (2016)</em>的树状解码器进行了强化，改成了双方向的，不仅有bottom-up encoder，还有up-down encoder。与基线NMT模型相比，性能有了很大的提升。</p>
+<p>二、在decoder端，利用<em>Tu et al. (2016)</em>的coverage模型，将译出端的句法结构整合进注意力机制中去。这种处理，使得性能得到更大的提升。</p>
+<h4 id="3-研究问题有什么挑战？"><a href="#3-研究问题有什么挑战？" class="headerlink" title="3.研究问题有什么挑战？"></a>3.研究问题有什么挑战？</h4><p>一、如何充分编码译出端的句法信息？较之之前已有的树状编码器(tree encoder).</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-ac021456b88eaeed.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Tree Encoder"></p>
+<p>二、直接将树状编码器的各个节点，输入注意力机制后，发现会过度地集中于父节点，而忽略了子节点。导致的结果是，对某些部分的句子进行了重复翻译。如何解决这个问题。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-165ce74906fae653.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Over attention to parent nodes"></p>
+<h4 id="4-本文的解决思路？"><a href="#4-本文的解决思路？" class="headerlink" title="4.本文的解决思路？"></a>4.本文的解决思路？</h4><p>对于第一个问题，提出<strong>bidirectional tree encoder</strong>。</p>
+<p>当下面的叶节点按照序列顺序进行完了双向LSTM后，拼接特征，输入上一级的父节点，然后以此类推，到达最后的根节点。这是，原来的树状编码器的思路，也就是bottom-up。这样我们每个节点，获得了一个向上的特征向量。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-76377f6fdc6bdb0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Bi-directional Tree Encoder"></p>
+<p>而本文更进一步，将bottom-up的结果输入根节点，然后再从上到下，到达各个子节点。这也就是top-down。这样每个节点又获得了一个向下的特征向量。</p>
+<p>之后将向上和向下的拼接，就是我们需要的双向特征了。</p>
+<p>对于第二个问题，提出了<strong>tree-coverage model</strong>。</p>
+<p>其实所谓的coverage就是，在计算当前时序的attention时，考虑之前时序的attention。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4787675-1ed9e9f543969536.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Attention balanced"></p>
+<p>具体细节公式参考论文。 </p>
+<p><a href="https://arxiv.org/pdf/1707.05436.pdf" target="_blank" rel="noopener">Improved Neural Machine Translation with a Syntax-Aware Encoder and Decoder</a></p>
+
+        
+        
+        <p class="article-more-link">
+          
+       </p>
+    </div>
+    <footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Paper-Notes/">Paper Notes</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/NMT/">NMT</a><a href="/tags/Linguistic-Structure/">Linguistic Structure</a>
+  </div>
+
+</div>
+
+
+
+
+<div class="comments-count">
+	
+</div>
+
+</footer>
+
+
+    </article>
+
+
+
+
+
+
+   
+    
+    <article class="post-expand post" itemprop="articleBody"> 
+        <header class="article-info clearfix">
+  <h1 itemprop="name">
+    
       <a href="/2017/10/31/神经机器翻译概览：基准模型与改进（下）/" title="神经机器翻译概览：基准模型与改进（下）" itemprop="url">神经机器翻译概览：基准模型与改进（下）</a>
   </h1>
   <p class="article-author">By
@@ -290,7 +367,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/NLP/" title="NLP">NLP<sup>1</sup></a></li>
+			<li><a href="/categories/NLP/" title="NLP">NLP<sup>2</sup></a></li>
 		  
 		
 		  
@@ -331,11 +408,11 @@
 			
 		
 			
-				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
+				<li><a href="/tags/cs224n/" title="cs224n">cs224n<sup>2</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/cs224n/" title="cs224n">cs224n<sup>1</sup></a></li>
+				<li><a href="/tags/机器翻译/" title="机器翻译">机器翻译<sup>2</sup></a></li>
 			
 		
 			
@@ -343,7 +420,7 @@
 			
 		
 			
-				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
+				<li><a href="/tags/词向量/" title="词向量">词向量<sup>1</sup></a></li>
 			
 		
 			
@@ -352,6 +429,10 @@
 		
 			
 				<li><a href="/tags/LSTM/" title="LSTM">LSTM<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/RNN/" title="RNN">RNN<sup>1</sup></a></li>
 			
 		
 			
